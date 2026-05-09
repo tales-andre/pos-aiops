@@ -10,6 +10,7 @@
 
 CSV:
 
+```csv
 servico,categoria,custo_mensal_usd,uso_medio_pct,observacao
 EC2 reservada,compute,4200,72,contrato de 1 ano
 EC2 on-demand,compute,8200,45,workloads variaveis
@@ -23,6 +24,7 @@ CloudWatch Metrics,observability,900,,
 Data Transfer Out,network,1900,,trafego entre regioes
 NAT Gateway,network,1200,,3 gateways ativos
 Lambda,compute,900,30,~12M invocacoes/mes
+```
 
 **Action:** O relatório deve trazer as oportunidades de economia priorizadas por impacto, quanto cada oportunidade de economia representa em percentual no valor da conta total, o esforço de implementação deve ser classificado entre: baixo, médio, alto.
 Apresentar os riscos ou pré-requisitos envolvidos em cada oportunidade.

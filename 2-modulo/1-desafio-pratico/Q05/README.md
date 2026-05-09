@@ -14,8 +14,9 @@
 - Não possui liveness e readiness probes
 - Não possui securityContext.
 
-Verifique o estado atual do deployment: 
+Verifique o estado atual do deployment:
 
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,6 +42,7 @@ spec:
           value: "P@ssw0rd2023!"
         - name: JWT_SECRET
           value: "hvt-jwt-prod-secret"
+```
 
 **After:** A nova versão do deployment deve seguir os padrões da empresa:
 - Possuir alta disponibilidade

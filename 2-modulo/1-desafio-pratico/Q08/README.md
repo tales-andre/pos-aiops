@@ -64,6 +64,7 @@ Conexões ativas ao Ledger: 240/250 (limite do RDS).
 ## Output
 
 https://gemini.google.com/share/532de019271f
+
 ---
 
 ## Justificativas
@@ -82,6 +83,7 @@ https://gemini.google.com/share/532de019271f
 - **CARE:** Seria um forte candidato para produzir um documento padronizado com o resultado final informando qual decisão deveria ser tomada, porém na questão não havia exemplos de documentos anteriores para serem seguidos.
 
 - **BAB:** Seria um framework intereessante, pensando em um registro tecnico mostrando o antes e depois do ambiente após o rollback, o que não é solicitado na questão.
+
 ---
 
 ## Nota sobre a nomenclatura::

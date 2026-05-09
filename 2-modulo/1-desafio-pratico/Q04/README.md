@@ -9,6 +9,8 @@
 **Task:** Gerar uma query SQL para um PostgreSQL que extraia informações sobre o crescimento de transações nos ultimos 6 meses. Essas informações serão utilizadas em um relatório mensal de transações de um Data Warehouse em PostgreSQL, divididos por categorias. Os numeros precisam estar consolidados e a query pode utilizar as 2 tabelas abaixo como referência:
 
 TABELA 1:
+
+```sql
 CREATE TABLE transactions (
   id              BIGSERIAL PRIMARY KEY,
   customer_id     BIGINT NOT NULL REFERENCES customers(id),
@@ -23,14 +25,18 @@ CREATE TABLE transactions (
 CREATE INDEX idx_transactions_created_at ON transactions(created_at);
 CREATE INDEX idx_transactions_status ON transactions(status);
 CREATE INDEX idx_transactions_category ON transactions(category);
+```
 
 TABELA 2:
+
+```sql
 CREATE TABLE customers (
   id          BIGSERIAL PRIMARY KEY,
   segment     VARCHAR(16) NOT NULL,
   country     CHAR(2) NOT NULL,
   signup_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+```
 
 As categorias em produção hoje são: subscription, one_time, refund e credit_adjustment
 

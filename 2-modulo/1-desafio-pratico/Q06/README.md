@@ -7,10 +7,10 @@
 ## Prompt
 
 **Context:** Um novo padrão interno de IaC (Infrastructure as Code) foi publicado pelo head de segurança e compliance da empresa. Os novos módulos Terraform devem seguir o seguinte padrão:
--As tags "Owner", "CostCenter" e "Environment" são obrigatórias em todo recurso
--O nome de todos os recursos devem possuir o prefixo: hvt-
--Todo bucket S3 devem possuir: encryption habilitada (SSE-S3 mínimo), versioning ativo, block public access total, logging configurado.
--Variáveis de entrada devem estar em variables.tf com description e type obrigatórios.
+- As tags "Owner", "CostCenter" e "Environment" são obrigatórias em todo recurso
+- O nome de todos os recursos devem possuir o prefixo: hvt-
+- Todo bucket S3 devem possuir: encryption habilitada (SSE-S3 mínimo), versioning ativo, block public access total, logging configurado.
+- Variáveis de entrada devem estar em variables.tf com description e type obrigatórios.
 
 **Action:** Crie um módulo terraform reutilizável para Criação de Buckets S3 na AWS, seguindo os novos padrões definidos pelo head de segurança e compliance informados acima.
 
@@ -18,6 +18,7 @@
 
 **Example:** Utilize o módulo de VPC abaixo como referência de estilo:
 
+```hcl
 variable "environment" {
   description = "Nome do ambiente (dev, staging, production)"
   type        = string
@@ -37,6 +38,8 @@ resource "aws_vpc" "this" {
     Name = "hvt-vpc-${var.environment}"
   })
 }
+```
+
 ---
 
 ## Modelo
