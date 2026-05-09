@@ -1,0 +1,256 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chronos-api
+  namespace: production
+  # ADICIONADO: Labels padronizadas para melhor organização e rastreabilidade
+  labels:
+    app: chronos-api
+    version: v1.2.3
+    component: backend
+    managed-by: platform-team
+spec:
+  # MODIFICADO: Aumentado de 1 para 3 réplicas para garantir alta disponibilidade
+  # Permite rolling updates sem downtime e tolerância a falhas de nodes
+  replicas: 3
+  
+  # ADICIONADO: Estratégia de rolling update configurada
+  # Garante zero downtime durante atualizações
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1  # No máximo 1 pod indisponível durante o update
+      maxSurge: 1        # No máximo 1 pod extra durante o update
+  
+  selector:
+    matchLabels:
+      app: chronos-api
+  
+  template:
+    metadata:
+      labels:
+        app: chronos-api
+        version: v1.2.3
+      # ADICIONADO: Annotations para observabilidade
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    
+    spec:
+      # ADICIONADO: SecurityContext no nível do pod
+      # Define políticas de segurança para todos os containers
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      
+      # ADICIONADO: Topology spread para distribuir pods entre zonas/nodes
+      # Melhora a resiliência contra falhas de infraestrutura
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: chronos-api
+      
+      # ADICIONADO: Anti-affinity para evitar múltiplos pods no mesmo node
+      # Garante que falha de um node não derruba toda a aplicação
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: chronos-api
+              topologyKey: kubernetes.io/hostname
+      
+      containers:
+      - name: api
+        # MODIFICADO: Tag 'latest' substituída por versão específica
+        # Garante reprodutibilidade e rastreabilidade de deployments
+        image: chronos-api:v1.2.3
+        
+        # ADICIONADO: ImagePullPolicy explícito
+        # IfNotPresent evita pulls desnecessários, economizando tempo e banda
+        imagePullPolicy: IfNotPresent
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        
+        # MODIFICADO: Secrets movidas para Kubernetes Secrets
+        # NUNCA hardcodear credenciais no manifest
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: chronos-api-secrets
+              key: db-password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: chronos-api-secrets
+              key: jwt-secret
+        # ADICIONADO: Variáveis de ambiente adicionais recomendadas
+        - name: ENV
+          value: "production"
+        - name: PORT
+          value: "8080"
+        
+        # ADICIONADO: Resources requests e limits
+        # Garante QoS e evita que um pod consuma todos os recursos do node
+        resources:
+          requests:
+            cpu: 100m      # CPU garantida
+            memory: 128Mi  # Memória garantida
+          limits:
+            cpu: 500m      # CPU máxima
+            memory: 512Mi  # Memória máxima (evita OOMKilled inesperados)
+        
+        # ADICIONADO: Liveness probe
+        # Kubernetes reinicia o container se ele travar ou ficar não-responsivo
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30  # Aguarda app inicializar
+          periodSeconds: 10        # Verifica a cada 10s
+          timeoutSeconds: 5        # Timeout da requisição
+          successThreshold: 1      # 1 sucesso = saudável
+          failureThreshold: 3      # 3 falhas = restart
+        
+        # ADICIONADO: Readiness probe
+        # Kubernetes só envia tráfego quando o pod está realmente pronto
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10  # Checa mais cedo que liveness
+          periodSeconds: 5         # Verifica frequentemente
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        
+        # ADICIONADO: Startup probe
+        # Para aplicações que demoram para inicializar
+        # Evita que liveness mate o pod durante startup lento
+        startupProbe:
+          httpGet:
+            path: /health/live
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 30     # 30 * 10s = 5min para startup
+        
+        # ADICIONADO: SecurityContext no nível do container
+        # Reforça políticas de segurança específicas do container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL  # Remove todas as capabilities Linux
+        
+        # ADICIONADO: Volume mounts para filesystem read-only
+        # Como o root filesystem é read-only, montamos volumes temporários
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/.cache
+      
+      # ADICIONADO: Volumes temporários
+      # Necessários quando usamos readOnlyRootFilesystem
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: cache
+        emptyDir: {}
+
+---
+# ADICIONADO: Secret separado (NÃO COMMITAR COM VALORES REAIS)
+# Em produção, use ferramentas como Sealed Secrets, External Secrets Operator,
+# ou gerencie via CI/CD com vault/SOPS
+apiVersion: v1
+kind: Secret
+metadata:
+  name: chronos-api-secrets
+  namespace: production
+type: Opaque
+stringData:
+  # ATENÇÃO: Estes são valores de exemplo
+  # Em produção real, use valores reais criptografados ou gestão externa
+  db-password: "SUBSTITUIR_POR_SENHA_REAL"
+  jwt-secret: "SUBSTITUIR_POR_SECRET_REAL"
+
+---
+# ADICIONADO: PodDisruptionBudget
+# Garante que pelo menos 2 pods fiquem disponíveis durante manutenções
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: chronos-api-pdb
+  namespace: production
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: chronos-api
+
+---
+# ADICIONADO: HorizontalPodAutoscaler
+# Escala automaticamente baseado em CPU/memória
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: chronos-api-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: chronos-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # Aguarda 5min antes de reduzir
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 30
+      - type: Pods
+        value: 2
+        periodSeconds: 30
+      selectPolicy: Max
