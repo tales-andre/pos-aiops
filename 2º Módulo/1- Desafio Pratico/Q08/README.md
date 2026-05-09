@@ -82,9 +82,9 @@ https://gemini.google.com/share/532de019271f
 - **CARE:** Seria um forte candidato para produzir um documento padronizado com o resultado final informando qual decisão deveria ser tomada, porém na questão não havia exemplos de documentos anteriores para serem seguidos.
 
 - **BAB:** Seria um framework intereessante, pensando em um registro tecnico mostrando o antes e depois do ambiente após o rollback, o que não é solicitado na questão.
+---
 
-
-- **Nota sobre a nomenclatura::**
-    - O enunciado informa a nessecidade de um **postmortem**, porém no meu entendimento ficou confuso elaborar um postmortem para um incidente que está em andamento, já que o postmortem é para ser um documento após a resolução de um incidente. Sendo assim, para não causar alucinações na IA (assim como causou em mim), ou incluir o termo RCA, resolvi tratar o prompt como "relatório técnico"
+## Nota sobre a nomenclatura::
+- O enunciado informa a nessecidade de um **postmortem**, porém no meu entendimento ficou confuso elaborar um postmortem para um incidente que está em andamento, já que o postmortem é para ser um documento após a resolução de um incidente. Sendo assim, para não causar alucinações na IA (assim como causou em mim), ou incluir o termo RCA, resolvi tratar o prompt como "relatório técnico"
 
 ---
