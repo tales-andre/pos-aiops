@@ -40,7 +40,8 @@ CREATE TABLE customers (
 
 As categorias em produção hoje são: subscription, one_time, refund e credit_adjustment
 
-**Action:** A query deve: 
+**Action:** A query deve:
+- Filtrar somente as categorias: 'subscription', 'one_time', 'refund' e 'credit_adjustment' 
 - Filtrar somente resultados com: status = 'completed'
 - Converter o campo amount_cents que está no formato 'centavos de real' para o formato 'Real' com 2 casas Decimais
 - Filtrar resultados dos ultimos 6 meses corridos a partir da data de 24/Abril/2026 (2026-04-24)
@@ -61,14 +62,14 @@ As categorias em produção hoje são: subscription, one_time, refund e credit_a
 
 ## Output
 
-https://gemini.google.com/share/0c562376d55d
+https://gemini.google.com/share/5d01f964d23d
 
 ---
 
 ## Justificativa
 
 - **Task:** Defino o que tenho em mãos (Tabelas de Referencia) e o que precisa ser feito com esses dados, em qual o ambiente será executado e o contexto da situação.
-- **Action:** Detalho os filtros e formato que o resultado deve ser apresentado na tela.
+- **Action:** Detalho os filtros e formato que o resultado deve ser apresentado na tela. Efetuado correção adicionando na action a necessidade de filtro por categorias.
 - **Goal:** Informo que o usuário não sabe escrever SQL e que o script deve ser executado sem necessidade de alterações manuais, pronto para exportar os resultados para o relatório mensal.
 
 ---
