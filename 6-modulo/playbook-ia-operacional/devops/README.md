@@ -21,4 +21,4 @@ Entram aqui prompts relacionados a:
 
 ## Prompts
 
-_Nenhum prompt cadastrado ainda._
+- [triagem-de-pods](./triagem-de-pods/) — diagnostica pods problemáticos de um cluster Kubernetes a partir de um snapshot, cruzando status, eventos e logs.

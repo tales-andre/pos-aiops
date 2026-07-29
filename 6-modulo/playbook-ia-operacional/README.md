@@ -28,7 +28,7 @@ _Nenhum prompt cadastrado ainda._
 
 Pipelines de CI/CD, containers, orquestração, infraestrutura como código, observabilidade, SRE e segurança operacional.
 
-_Nenhum prompt cadastrado ainda._
+- [triagem-de-pods](./devops/triagem-de-pods/) — diagnostica pods problemáticos de um cluster Kubernetes a partir de um snapshot, cruzando status, eventos e logs.
 
 ### [Produtividade](./produtividade/)
 
