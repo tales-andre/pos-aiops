@@ -80,6 +80,11 @@ O padrão podia ser ensinado de três formas — a escolha e o descarte das outr
 que trata Examples como seção de primeira classe, e a tarefa é dominada por formato
 e consistência, não por raciocínio de diagnóstico (por isso não é RISE como no CP01).
 
+**Criação via meta-prompting:** o prompt foi gerado e refinado com **Claude Opus 5**
+(`claude-opus-5`, via claude.ai) dirigindo a redação a partir dos requisitos; a
+**execução** nos três alertas rodou no **Gemini 3.5 Flash**. Dois provedores distintos
+(Anthropic na criação, Google na execução). O meta-prompt em si não é entregável.
+
 **A armadilha do checkpoint** é misturar as duas listas (exemplares de formato × alertas
 de entrada). O prompt marca os exemplares como *output-only*, com instrução explícita de
 não inferir o formato de entrada a partir deles nem reaproveitar seu conteúdo — validado
