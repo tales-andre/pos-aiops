@@ -25,3 +25,4 @@ Entram aqui prompts relacionados a:
 - [nota-de-triagem](./nota-de-triagem/) — transforma um alerta cru de monitoramento em uma nota de triagem padronizada de cinco campos.
 - [causa-raiz](./causa-raiz/) — analisa a causa-raiz de uma degradação cruzando configuração, métricas e logs, separando causa de sintoma.
 - [backpressure-relay](./backpressure-relay/) — apoia uma decisão de backpressure comparando opções contra as restrições, com matriz de decisão e recomendação em camadas.
+- [migracao-forge](./migracao-forge/) — cadeia de três prompts que conduz a migração de um pipeline de lote para orientado a eventos (diagnóstico → estratégia em fases → plano executável).
