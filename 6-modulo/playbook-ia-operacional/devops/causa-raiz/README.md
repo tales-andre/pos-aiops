@@ -5,7 +5,7 @@ versao: 1.0.0
 tags: [devops, sre, rca, observabilidade, elasticsearch]
 inputs:
   - nome: CONFIG_CLUSTER
-    descricao: Arquivo de configuração versionado do cluster (ex.: cerebro.yaml) com os parâmetros que definem o baseline esperado.
+    descricao: "Arquivo de configuração versionado do cluster (ex.: cerebro.yaml) com os parâmetros que definem o baseline esperado."
   - nome: SERIE_METRICAS
     descricao: Série temporal de métricas do sistema no período da degradação (latência, vazão, heap, cache).
   - nome: TRECHO_LOGS
