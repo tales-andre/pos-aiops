@@ -23,3 +23,4 @@ Entram aqui prompts relacionados a:
 
 - [triagem-de-pods](./triagem-de-pods/) — diagnostica pods problemáticos de um cluster Kubernetes a partir de um snapshot, cruzando status, eventos e logs.
 - [nota-de-triagem](./nota-de-triagem/) — transforma um alerta cru de monitoramento em uma nota de triagem padronizada de cinco campos.
+- [causa-raiz](./causa-raiz/) — analisa a causa-raiz de uma degradação cruzando configuração, métricas e logs, separando causa de sintoma.

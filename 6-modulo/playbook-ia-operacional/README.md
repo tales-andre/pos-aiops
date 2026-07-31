@@ -30,6 +30,7 @@ Pipelines de CI/CD, containers, orquestração, infraestrutura como código, obs
 
 - [triagem-de-pods](./devops/triagem-de-pods/) — diagnostica pods problemáticos de um cluster Kubernetes a partir de um snapshot, cruzando status, eventos e logs.
 - [nota-de-triagem](./devops/nota-de-triagem/) — transforma um alerta cru de monitoramento em uma nota de triagem padronizada de cinco campos.
+- [causa-raiz](./devops/causa-raiz/) — analisa a causa-raiz de uma degradação cruzando configuração, métricas e logs, separando causa de sintoma.
 
 ### [Produtividade](./produtividade/)
 
