@@ -33,6 +33,7 @@ Pipelines de CI/CD, containers, orquestração, infraestrutura como código, obs
 - [causa-raiz](./devops/causa-raiz/) — analisa a causa-raiz de uma degradação cruzando configuração, métricas e logs, separando causa de sintoma.
 - [backpressure-relay](./devops/backpressure-relay/) — apoia uma decisão de backpressure comparando opções contra as restrições, com matriz de decisão e recomendação em camadas.
 - [migracao-forge](./devops/migracao-forge/) — cadeia de três prompts que conduz a migração de um pipeline de lote para orientado a eventos (diagnóstico → estratégia em fases → plano executável).
+- [networkpolicy-sentinel](./devops/networkpolicy-sentinel/) — endurece um manifesto de NetworkPolicy permissivo em default-deny + allow least-privilege, com loop de verificação adversarial e critério de parada.
 
 ### [Produtividade](./produtividade/)
 
