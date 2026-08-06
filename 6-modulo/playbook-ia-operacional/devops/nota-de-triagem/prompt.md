@@ -25,8 +25,7 @@ Mapa de ownership para escalonamento:
 
 ACTION:
 Receba um alerta cru no parâmetro ALERTA_CRU abaixo e produza exatamente uma nota de triagem
-padronizada, com cinco campos, na ordem fixa: ALERTA, IMPACTO, HIPÓTESE INICIAL, AÇÃO IMEDIATA,
-ESCALAR PARA.
+padronizada, com quatro campos, na ordem fixa: ALERTA, IMPACTO, HIPÓTESE INICIAL, AÇÃO IMEDIATA.
 
 Antes de escrever, execute internamente e sem expor no output:
 1. Identifique o componente onde o alerta disparou e a janela temporal informada.
@@ -39,7 +38,7 @@ Antes de escrever, execute internamente e sem expor no output:
    de efeito da ação imediata.
 
 REQUIREMENTS:
-- Produza somente os cinco campos, um por linha, em MAIÚSCULAS nos rótulos, seguidos de dois pontos.
+- Produza somente os quatro campos, um por linha, em MAIÚSCULAS nos rótulos, seguidos de dois pontos.
 - Nenhum preâmbulo, nenhum comentário, nenhuma formatação markdown, nenhum bloco de código.
 - Uma linha por campo, máximo de 140 caracteres por linha. Nunca use bullets dentro de um campo.
 - ALERTA: comece pelo nome do componente, seguido de hífen e da condição observada com o valor
@@ -52,9 +51,6 @@ REQUIREMENTS:
 - AÇÃO IMEDIATA: uma ação concreta, reversível e no imperativo ou no particípio de execução
   (ex: "rollback iniciado", "aumento manual de partições"). Nunca proponha ação destrutiva,
   nunca proponha mais de uma ação, nunca escreva "investigar" como ação.
-- ESCALAR PARA: formato "@owner se <condição observável> em <N>min". N é o tempo esperado para a
-  ação imediata surtir efeito: rollback ~10min, ajuste de capacidade ou reprocessamento ~15min,
-  repartição ou reprocessamento de batch ~20min. Nunca use janela sem número.
 - Nunca invente tenant, timestamp, número de deploy, métrica, dashboard ou nome de time que não
   esteja no input ou no mapa de ownership.
 - Idioma: pt-BR, preservando termos técnicos em inglês como já usados pelo time
@@ -74,21 +70,18 @@ ALERTA: Relay - taxa de rejeição de ingestão acima de 2% por 5min
 IMPACTO: ingestão de telemetry degradada para ~12% dos tenants
 HIPÓTESE INICIAL: deploy do Relay às 09:14 reduziu o buffer de ingestão
 AÇÃO IMEDIATA: rollback iniciado via Argo CD
-ESCALAR PARA: @relay-core se a rejeição não cair em 10min
 
 Exemplar 2:
 ALERTA: Forge - lag de ingestão acima de 15min
 IMPACTO: dashboards do Sentinel atrasados para todos os tenants
 HIPÓTESE INICIAL: pico de volume do tenant acme-corp saturou o consumer
 AÇÃO IMEDIATA: aumento manual de partições do consumer do Relay
-ESCALAR PARA: @data-platform se lag não estabilizar em 20min
 
 Exemplar 3:
 ALERTA: Cerebro - latência de busca p99 acima de 4s
 IMPACTO: investigação de incidentes lenta para o time interno
 HIPÓTESE INICIAL: reindexação noturna não concluiu antes do horário comercial
 AÇÃO IMEDIATA: pausar reindexação e priorizar shard quente
-ESCALAR PARA: @search-infra se p99 não cair em 15min
 
 ALERTA_CRU:
 <<<
