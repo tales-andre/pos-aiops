@@ -18,47 +18,60 @@ execução a este módulo).
 
 ## Evidência de execução
 
-Como o `promptfoo-action` não roda fora do GitHub (ele lê o evento de PR pra decidir o que
-mudou), a evidência real é dupla: os `promptfoo eval` locais que alimentam este checkpoint (os
-mesmos comandos que a action executa por trás, aplicados aqui manualmente contra cada config —
-ver o `README.md` de cada prompt para o resultado registrado) e a execução do workflow em si no
-GitHub, provocada por um PR real com uma regressão introduzida de propósito.
+Duas fontes: os `promptfoo eval` locais que alimentam este checkpoint (mesmos comandos que a
+action roda por trás — ver o `README.md` de cada prompt) e **duas execuções reais do workflow no
+GitHub**, capturadas em produção:
 
-**Resultado local, antes de subir pro GitHub** (o que a action reproduziria por trás):
+- **Execução manual** (`workflow_dispatch`) contra o `master` como está hoje:
+  [run #31099021613](https://github.com/tales-andre/pos-aiops/actions/runs/31099021613)
+- **PR de regressão provocada**, branch `cp10/prova-de-regressao`:
+  [PR #1](https://github.com/tales-andre/pos-aiops/pull/1) ·
+  [run #31099457895](https://github.com/tales-andre/pos-aiops/actions/runs/31099457895) ·
+  [comentário da action no PR](https://github.com/tales-andre/pos-aiops/pull/1#issuecomment-5204634581)
+  ("0 Success / 3 Failure")
 
-| Prompt | Anthropic Haiku 4.5 | Google Gemini 3.5 Flash |
+**Resultado real, os dois runs:**
+
+| Prompt | Run manual (`master`) | Run do PR (regressão) |
 |---|---|---|
-| `nota-de-triagem` | ✅ 3/3 | ✅ 3/3 |
-| `triagem-de-pods` | ✅ 3/3 (recalibrado) | ✅ 3/3 (números do CP08, sob a nova margem — não reexecutado, ver achado de cota abaixo) |
-| `networkpolicy-sentinel` | ✅ (recalibrado) | ✅ (recalibrado) |
-| `causa-raiz` | ✅ 7/8 | ❌ 6/8 (honestidade zerada — achado real do CP09) |
-| `backpressure-relay` | ✅ 7/8 | ✅ 7/8 |
-| `migracao-forge` (Elo 1) | ❌ **5/8 (escopo zerado)** | não executado — cota esgotada (ver abaixo) |
+| `nota-de-triagem` | ✅ success | ❌ **failure — Anthropic `[FAIL]` nos 3 casos** (a regressão real: assert `contains: "ESCALAR PARA:"` quebrado); Google `[ERROR]` por rate limit, separado |
+| `causa-raiz` | ✅ success | pulado — nada mudou nessa pasta no PR |
+| `triagem-de-pods` | ❌ failure — só `[ERROR]` de rate limit do Google, 0 falha de conteúdo | pulado |
+| `networkpolicy-sentinel` | ❌ failure — idem, só rate limit | pulado |
+| `backpressure-relay` | ❌ failure — idem, só rate limit | pulado |
+| `migracao-forge` (Elo 1) | ❌ failure — Anthropic `[FAIL]` real (mesmo achado de escopo do teste local, 5/8) + Google rate limit | pulado |
 
-**Achado de custo/cota, direto do enunciado deste checkpoint** ("como você lida com o custo de
-chamar modelo a cada PR"): a cota gratuita do Google AI Studio para `gemini-3.5-flash` é de
-**20 requisições por dia** (`RESOURCE_EXHAUSTED`, `limit: 20`). Os testes acumulados do CP08 ao
-CP10 no mesmo dia estouraram essa cota — as duas últimas chamadas (Google em `triagem-de-pods`
-reverificado e em `migracao-forge`) entraram em retry com backoff de 60s+ por tentativa (5
-tentativas) e precisaram ser abortadas. Isso é exatamente o cenário que justifica, na seção
-"Suíte inteira × só o que mudou" abaixo, não rodar os 6 configs a cada PR trivial — e é motivo
-prático (não só teórico) para o time considerar upgrade de tier antes de habilitar o workflow em
-produção real, se o volume de PRs crescer.
+**Duas coisas que a evidência real prova ao mesmo tempo:**
 
-**Regressão real encontrada, sem precisar forjar uma:** o `migracao-forge` (Elo 1) já reprovou
+1. **O gate funciona:** o PR com a regressão provocada falhou pelo motivo certo — o log da action
+   mostra `[FAIL]` na coluna do Anthropic para os três alertas, não erro de infraestrutura, e o
+   comentário automático no PR reporta "0 Success / 3 Failure". Os outros 5 jobs nem chamaram
+   modelo nenhum (pularam por change-detection), confirmando a estratégia "só o que mudou" na
+   prática, não só na teoria.
+2. **Achado de custo/cota, direto do enunciado deste checkpoint** ("como você lida com o custo de
+   chamar modelo a cada PR"): a cota gratuita do Google AI Studio para `gemini-3.5-flash` é de
+   **20 requisições por dia** (`RESOURCE_EXHAUSTED`, `limit: 20`). Os testes acumulados do CP08 ao
+   CP10 no mesmo dia estouraram essa cota — toda chamada Google subsequente (local e no GitHub)
+   passou a errar com `RateLimitExhaustedError` depois de 4 tentativas com backoff de 60s+. Isso
+   derrubou 3 jobs do run manual só por infraestrutura, com zero relação com a qualidade dos
+   prompts (confirmado lendo o log de cada um: nenhum `[FAIL]` de conteúdo, só `[ERROR]` de rate
+   limit). É exatamente o cenário que justifica, na seção "Suíte inteira × só o que mudou" abaixo,
+   não rodar os 6 configs a cada PR trivial — e motivo prático (não só teórico) para o time
+   considerar upgrade de tier antes de depender deste pipeline em produção real, se o volume de
+   PRs crescer. Fica registrado como limitação operacional conhecida, não escondido atrás de um
+   `force-run` ou de rodar de novo até "dar certo".
+
+**Regressão real encontrada, sem precisar só da provocada:** o `migracao-forge` (Elo 1) reprovou
 de verdade contra o Anthropic Haiku 4.5 — critério de escopo zerado porque o diagnóstico avançou
 pra desenho de solução, violando a regra central do elo. Isso já é evidência de reprovação
 genuína do gate. Além dela, uma **regressão provocada de propósito** (mais barata — determinística,
 sem custo de LLM extra) foi aberta como PR real:
 
 **PR de demonstração:** branch `cp10/prova-de-regressao`, PR contra `master`, com uma edição em
-`devops/nota-de-triagem/prompt.md` que remove a instrução dos cinco rótulos fixos — o assert
-`contains: "ESCALAR PARA:"` do `promptfooconfig.yaml` (CP08) passa a falhar. Depois de capturar a
-falha no Actions, o PR foi fechado sem merge, sem alterar `master`.
-
-- PR: [inserir link após abertura]
-- Execução do workflow (sucesso, estado normal do `master`): [inserir link]
-- Execução do workflow (falha provocada): [inserir link]
+`devops/nota-de-triagem/prompt.md` que remove o campo `ESCALAR PARA` (e os três exemplares que o
+usavam) — o assert `contains: "ESCALAR PARA:"` do `promptfooconfig.yaml` (CP08) passa a falhar.
+Depois de capturar a falha no Actions (links acima), o PR foi fechado sem merge, sem alterar
+`master`.
 
 ## A estratégia de gate
 
