@@ -1,0 +1,74 @@
+description: "CP10 — gate de qualidade (LLM-as-judge) para a cadeia de migração do Forge, escopado ao Elo 1 (diagnóstico) — ver curadoria no README sobre o motivo do escopo"
+
+prompts:
+  - file://elo1-geracao.js
+
+providers:
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: anthropic-haiku-4.5
+    config:
+      max_tokens: 8192
+  - id: google:gemini-3.5-flash
+    label: google-gemini-3.5-flash
+    config:
+      generationConfig:
+        thinkingConfig:
+          thinkingBudget: 0
+        maxOutputTokens: 8192
+
+defaultTest:
+  options:
+    provider:
+      id: anthropic:messages:claude-opus-5
+      config:
+        max_tokens: 4096
+    rubricPrompt:
+      - role: system
+        content: |
+          Você é um Staff Engineer revisando o diagnóstico de um pipeline de dados (Elo 1 de
+          uma cadeia de migração) contra uma rubrica fixa de 4 critérios. Para cada critério,
+          dê uma nota de 0 a 2: 0 = não atende, 1 = atende parcialmente, 2 = atende bem.
+
+          Critérios:
+          1. FIDELIDADE AO ESTADO ATUAL — reconstrói a cadeia (ingestão, transformação,
+             escrita, consumo) só com o que está descrito no input, sem inventar mecanismo,
+             garantia ou comportamento não relatado.
+          2. ESCOPO RESPEITADO (SÓ DIAGNÓSTICO) — este elo não pode propor solução,
+             arquitetura-alvo, tecnologia ou cronograma. Qualquer recomendação de caminho a
+             seguir, mesmo sutil, viola a regra central deste elo e zera este critério.
+          3. ACOPLAMENTOS E MODOS DE FALHA — identifica onde o desenho atual depende do
+             fechamento da hora além do agendamento, e enumera modos de falha herdados a
+             partir do ponto frágil relatado (não só repete o ponto frágil, generaliza dele).
+          4. HONESTIDADE NAS LACUNAS — onde o estado atual não é específico o bastante para
+             concluir (ex.: garantia de idempotência, atomicidade de escrita), marca como NÃO
+             DECIDÍVEL e diz o dado que falta, em vez de assumir um comportamento razoável.
+
+          Calcule score = soma dos 4 critérios (0 a 8, inteiro).
+          Calcule pass = true somente se score >= 6 E nenhum dos 4 critérios individuais é 0.
+          Caso contrário pass = false.
+
+          Responda SOMENTE com um JSON no formato:
+          {"reason": "<criterio 1: nota e por quê; criterio 2: nota e por quê; criterio 3: nota e por quê; criterio 4: nota e por quê>", "score": <soma 0-8>, "pass": <true|false>}
+      - role: user
+        content: "<Output>\n{{ output }}\n</Output>"
+  assert:
+    - type: llm-rubric
+      value: "n/a — rubrica completa no rubricPrompt acima"
+      threshold: 6
+
+tests:
+  - description: "Diagnóstico do Forge — pipeline batch com risco de acúmulo em dobro após falha"
+    vars:
+      ESTADO_ATUAL_FORGE: |
+        Forge hoje:
+        - ingestão: um job em cron acorda a cada 60min (o "forge-batch-ingest")
+        - transformação: 14 etapas de processamento encadeadas (em Spark), ~40min no total
+        - destino: grava em tabelas no data warehouse, particionadas por hora
+        - ponto frágil: se um lote falha, o próximo acumula o dobro de volume
+        - quem depende do Forge: Sentinel (lê as tabelas agregadas), Cerebro (indexa
+          os eventos transformados) e os relatórios de billing da Pepper (rodam de madrugada)
+      REQUISITOS_MIGRACAO: |
+        O que a migração precisa garantir:
+        - consumir do Relay continuamente, processando em pequenos blocos no lugar do lote de 1h
+        - manter quem depende do Forge funcionando durante a transição
+        - nada de virada única (big-bang): a migração tem que ir em passos e poder voltar atrás

@@ -1,0 +1,85 @@
+description: "CP10 — gate de qualidade (LLM-as-judge) para a decisão de backpressure, contra o cenário real do Relay"
+
+prompts:
+  - file://prompt.md
+
+providers:
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: anthropic-haiku-4.5
+    config:
+      max_tokens: 8192
+  - id: google:gemini-3.5-flash
+    label: google-gemini-3.5-flash
+    config:
+      generationConfig:
+        thinkingConfig:
+          thinkingBudget: 0
+        maxOutputTokens: 8192
+
+defaultTest:
+  options:
+    # Mesmo padrão de juiz do CP09: modelo diferente dos dois geradores, pra não
+    # avaliar a própria saída.
+    provider:
+      id: anthropic:messages:claude-opus-5
+      config:
+        max_tokens: 4096
+    rubricPrompt:
+      - role: system
+        content: |
+          Você é um Principal Engineer revisando uma decisão de arquitetura sob restrição
+          (backpressure) contra uma rubrica fixa de 4 critérios. Para cada critério, dê uma
+          nota de 0 a 2: 0 = não atende, 1 = atende parcialmente, 2 = atende bem.
+
+          Critérios:
+          1. MATRIZ COMPLETA E HONESTA — toda opção é pontuada contra toda restrição; todo
+             veredito ATENDE vem com o número que sustenta; nenhum dado ausente foi estimado
+             para fechar uma conta (deveria estar marcado NÃO DECIDÍVEL com os cenários
+             extremos). Qualquer "ATENDE" sem número, ou qualquer conta fechada por suposição
+             não declarada, derruba este critério para no máximo 1.
+          2. RESTRIÇÃO VINCULANTE CORRETA — identifica corretamente qual restrição se rompe
+             primeiro e por qual margem (não a mais importante politicamente), com a
+             classificação certa entre contratual/estrutural/financeira e sem tratar as três
+             como equivalentes em peso.
+          3. PREÇO E REPROVAÇÃO EXPLÍCITA — toda opção recomendada declara o que se perde e
+             quem paga; toda opção da lista do time que é inadequada é reprovada nomeadamente,
+             com o mecanismo da falha (não pode ser só omitida em silêncio).
+          4. RECOMENDAÇÃO EM CAMADAS COM FALSIFICADOR — a recomendação é ordenada por custo e
+             reversibilidade crescentes, cada camada protege uma restrição nomeada, e a análise
+             declara o que tornaria a recomendação errada (ou, se nenhuma opção satisfizer
+             tudo, qual restrição precisa ser renegociada — em vez de fingir uma solução que
+             resolve tudo).
+
+          Calcule score = soma dos 4 critérios (0 a 8, inteiro).
+          Calcule pass = true somente se score >= 6 E nenhum dos 4 critérios individuais é 0.
+          Caso contrário pass = false.
+
+          Responda SOMENTE com um JSON no formato:
+          {"reason": "<criterio 1: nota e por quê; criterio 2: nota e por quê; criterio 3: nota e por quê; criterio 4: nota e por quê>", "score": <soma 0-8>, "pass": <true|false>}
+      - role: user
+        content: "<Output>\n{{ output }}\n</Output>"
+  assert:
+    - type: llm-rubric
+      value: "n/a — rubrica completa no rubricPrompt acima"
+      threshold: 6
+
+tests:
+  - description: "Backpressure do Relay — pico de 320k msgs/s vs. SLA de 60s do Sentinel"
+    vars:
+      ESTADO_ATUAL: |
+        Relay (barramento de eventos):
+        - throughput sustentado: 180k msgs/s
+        - pico observado no incidente da semana passada: 320k msgs/s por 25min
+        - retenção atual: 4h
+        - consumidores: Forge (ingestão), Sentinel (alerting em tempo real)
+      RESTRICOES: |
+        - alerting do Sentinel não pode atrasar mais que 60s (SLA com cliente)
+        - ingestão do Forge pode atrasar até 15min sem violar SLA
+        - orçamento de infra do trimestre já está 8% acima do previsto
+        - Steve Rogers lembra que o barramento antigo perdia mensagens sob pico,
+          e perda de telemetry é inaceitável para um produto de observabilidade
+      OPCOES_EM_MESA: |
+        - dar prioridade ao Sentinel (alerting em tempo real) na frente do Forge (que pode esperar até 15min)
+        - guardar o que não foi processado numa fila separada para reprocessar depois (o que se chama dead-letter queue)
+        - dividir o Relay por cliente, para que um cliente barulhento não atrapalhe os outros
+        - aumentar automaticamente o número de consumidores quando a carga sobe

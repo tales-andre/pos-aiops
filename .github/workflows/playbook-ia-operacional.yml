@@ -1,0 +1,78 @@
+name: "Playbook de IA Operacional — suíte de prompts"
+
+# Só PR + manual: ver "Quando rodar" na justificativa estendida
+# (6-modulo/playbook-ia-operacional/CP10-pipeline.md) para a comparação com
+# push-para-master e com rodar em todo push de branch.
+"on":
+  pull_request:
+    paths:
+      - "6-modulo/playbook-ia-operacional/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  evaluate:
+    name: "promptfoo — ${{ matrix.prompt }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      # Um job por prompt (não um config combinado): cada job lê SÓ o promptfooconfig.yaml
+      # da sua própria pasta, e a action pula o job sozinha se nada nela mudou no PR —
+      # ver "Suíte inteira × só o que mudou" na justificativa estendida.
+      matrix:
+        include:
+          - prompt: nota-de-triagem
+          - prompt: triagem-de-pods
+          - prompt: networkpolicy-sentinel
+          - prompt: causa-raiz
+            repeat: 3
+            repeat_min_pass: 2
+          - prompt: backpressure-relay
+            repeat: 3
+            repeat_min_pass: 2
+          - prompt: migracao-forge
+            repeat: 3
+            repeat_min_pass: 2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # necessário pro cálculo de arquivos alterados no PR
+
+      - name: Cache do promptfoo
+        uses: actions/cache@v4
+        with:
+          path: "6-modulo/playbook-ia-operacional/devops/${{ matrix.prompt }}/.promptfoo-cache"
+          key: >-
+            ${{ runner.os }}-promptfoo-${{ matrix.prompt }}-
+            ${{ hashFiles(format('6-modulo/playbook-ia-operacional/devops/{0}/**', matrix.prompt)) }}
+          restore-keys: |
+            ${{ runner.os }}-promptfoo-${{ matrix.prompt }}-
+
+      - name: "Rodar suíte — ${{ matrix.prompt }}"
+        uses: promptfoo/promptfoo-action@v1
+        env:
+          # A action não tem input dedicado pra Google/Gemini — passa como env var,
+          # que o promptfoo lê diretamente (ver justificativa, "Onde ficam as chaves").
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          working-directory: "6-modulo/playbook-ia-operacional/devops/${{ matrix.prompt }}"
+          config: promptfooconfig.yaml
+          # Qualquer .md ou .js mudado NESTA pasta conta como "este prompt mudou" —
+          # cobre prompt.md, README.md e os extratores de elo (prompt-geracao.js,
+          # elo1-geracao.js) sem listar arquivo por arquivo.
+          prompts: |
+            **/*.md
+            **/*.js
+          cache-path: .promptfoo-cache
+          max-concurrency: 4
+          # 100%: todo assert (determinístico ou juiz) barra o merge se falhar — ver
+          # "O que exatamente falha o build" na justificativa estendida.
+          fail-on-threshold: 100
+          repeat: ${{ matrix.repeat }}
+          repeat-min-pass: ${{ matrix.repeat_min_pass }}

@@ -107,6 +107,43 @@ e os placeholders de limiar que a estratégia atribuiu à Fase 0.
   Combinado com o Gemini dos CP01/02/04 e o Opus 5 do CP03, o playbook cobre dois
   provedores distintos (Anthropic e Google) ao longo do desafio.
 
+## Gate de qualidade — LLM-as-judge (CP10)
+
+**Escopo: só o Elo 1 (diagnóstico).** A cadeia inteira exigiria orquestrar 3 chamadas de LLM em
+sequência dentro de um teste promptfoo (saída do Elo 1 → entrada do Elo 2 → saída do Elo 2 →
+entrada do Elo 3), o que precisaria de um provider customizado que chama a API três vezes por
+trás — engenharia real para um checkpoint que já cobre bem o padrão de teste com os outros cinco
+prompts. O Elo 1 foi escolhido como representante porque é o único elo autocontido (não depende
+de output de elo anterior) e o mais reusado — toda migração futura passa por ele, mesmo que os
+elos seguintes mudem. **Lacuna registrada, não escondida:** os Elos 2 e 3 não têm teste
+automatizado ainda.
+
+[`elo1-geracao.js`](./elo1-geracao.js) extrai o bloco do Elo 1 de `prompt.md` em runtime, mesmo
+padrão do `prompt-geracao.js` do `networkpolicy-sentinel` (CP08) — `prompt.md` continua sendo a
+única fonte do texto.
+
+**Rubrica** (4 critérios, 0–2, corte ≥6 e nenhum zerado): fidelidade ao estado atual (sem
+inventar mecanismo ou garantia não descrita), escopo respeitado (este elo só diagnostica — nunca
+propõe solução, arquitetura-alvo ou tecnologia), acoplamentos e modos de falha (deriva do ponto
+frágil relatado, não só repete), honestidade nas lacunas (marca NÃO DECIDÍVEL em vez de assumir).
+
+**Resultado real (`promptfoo eval`):**
+
+| Provider | Score | Gate |
+|---|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | **5/8** | ❌ **FAIL** — critério 2 (escopo) zerado |
+| `google:gemini-3.5-flash` | — | não executado nesta rodada — cota gratuita diária do AI Studio (20 req/dia) esgotada pelos testes do CP08–CP10 no mesmo dia; ver `CP10-pipeline.md` |
+
+**O Haiku 4.5 reprovou de verdade, e é um achado de conteúdo, não um bug de config.** O
+diagnóstico ficou correto na reconstrução da cadeia (critério 3: 2, critério 4: 2), mas a seção
+de "pré-requisitos de migração" (seção 6 do formato esperado) avançou para desenho de solução —
+propôs mecanismo de dupla escrita, validação por checksum, e até perguntou sobre tecnologia de
+serialização (Avro/Protobuf/JSON) e warehouse alvo (Snowflake/BigQuery/Redshift). O prompt do
+Elo 1 proíbe isso explicitamente ("Nenhuma recomendação de solução... este elo termina no
+diagnóstico"), e o juiz pegou a violação com exemplos citados linha a linha. Isso é exatamente o
+tipo de regressão sutil — o texto está bem escrito e parece útil, só que descumpre o contrato do
+elo — que um assert de `contains`/`regex` não pegaria, e que o gate do CP10 existe para barrar.
+
 ## Limitações conhecidas
 
 - A qualidade de cada elo depende do anterior: um diagnóstico pobre propaga lacunas

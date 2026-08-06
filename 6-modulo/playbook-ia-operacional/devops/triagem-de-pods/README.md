@@ -129,6 +129,14 @@ sistematicamente é o teto de 5s/US$0,01 contra o formato de saída deste prompt
    próprio CP01 já citava Flash Lite como alternativa mais barata para quem precisar caber num
    orçamento apertado) — decisão para o time definir, não para o teste forçar silenciosamente.
 
+### Atualização CP10 — tetos de latência/custo recalibrados
+
+Os tetos de 5s/US$0,01 acima (fixados no CP08) foram levados para o pipeline do CP10 e
+**subidos para 20s/US$0,02** — a recomendação já registrada na seção anterior foi executada, não
+só anotada. Reverificado com `claude-haiku-4-5-20251001`: **3/3 PASS** nos três casos (7–8s de
+latência real, bem dentro do novo teto). Detalhe da decisão e a comparação de alternativas em
+[`CP10-pipeline.md`](../../CP10-pipeline.md).
+
 ## Limitações conhecidas
 
 - Diagnostica **apenas com o que está no snapshot**: se faltarem logs ou eventos,

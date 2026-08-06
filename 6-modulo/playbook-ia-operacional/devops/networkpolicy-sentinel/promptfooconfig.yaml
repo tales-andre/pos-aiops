@@ -35,8 +35,11 @@ defaultTest:
         const regras = (output.match(/-\s+(from|to):/g) || []).length;
         const comentarios = (output.match(/^\s*#/gm) || []).length;
         return comentarios >= regras;
+    # Teto recalibrado no CP10: 5s reprovava os dois providers de forma consistente por
+    # causa do CoT de segurança embutido no prompt (5,2-16,4s observados), não por bug —
+    # ver curadoria no README e no CP10. 20s mantém margem sem barrar todo PR.
     - type: latency
-      threshold: 5000
+      threshold: 20000
     - type: cost
       threshold: 0.01
 

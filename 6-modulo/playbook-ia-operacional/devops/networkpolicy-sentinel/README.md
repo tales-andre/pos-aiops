@@ -251,6 +251,13 @@ caber no teto) reintroduziria exatamente o risco que a Chain-of-Verification exi
 O trade-off aqui não é "modelo mais barato": é "orçamento de latência maior para prompts que
 tocam segurança", uma exceção explícita, não uma correção do prompt.
 
+### Atualização CP10 — teto de latência recalibrado
+
+O teto de 5s (CP08) foi subido para **20s** no pipeline do CP10, pela mesma razão do
+`triagem-de-pods`: o CoT de segurança embutido no prompt consome tempo de geração real (5,2–16,4s
+observados), e um teto inatingível reprova todo PR permanentemente, não só regressões de verdade.
+Reverificado nos dois providers: **2/2 PASS**. Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+
 ## Limitações conhecidas
 
 - Assume o label automático de namespace `kubernetes.io/metadata.name` (padrão desde

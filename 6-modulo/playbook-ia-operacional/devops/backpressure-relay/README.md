@@ -88,6 +88,29 @@ perda de telemetria), com **Gemini 3.6 Flash** (`gemini-3.6-flash`). Resultado r
   modelo dentro do provedor Google; a tarefa é de raciocínio pesado (~49s) e o modelo
   respeitou a estrutura e as regras invioláveis sem encurtar a análise.
 
+## Gate de qualidade — LLM-as-judge (CP10)
+
+Saída aberta (matriz de decisão, sem resposta única) — mesmo padrão de gate do CP09 aplicado
+aqui: [`promptfooconfig.yaml`](./promptfooconfig.yaml) gera a decisão de verdade com os dois
+providers do CP08 (`claude-haiku-4-5-20251001` + `gemini-3.5-flash`) contra o cenário real do
+Relay, e julga com um terceiro modelo (`claude-opus-5`) numa rubrica de 4 critérios: matriz
+completa e honesta (todo `ATENDE` com número, nenhum dado ausente estimado), restrição
+vinculante corretamente identificada, preço declarado + reprovação explícita de opção
+inadequada, e recomendação em camadas com falsificador. Corte: soma ≥ 6 de 8 **e** nenhum
+critério zerado — mesma regra composta da causa-raiz.
+
+**Resultado real (`promptfoo eval`):**
+
+| Provider | Score | Gate |
+|---|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | 7/8 | ✅ PASS |
+| `google:gemini-3.5-flash` | 7/8 | ✅ PASS |
+
+Nenhum ajuste foi necessário — os dois geradores produziram matriz completa, preço declarado e
+falsificador presente na primeira execução real. No pipeline do CP10, este teste roda com
+`repeat: 3` / `repeat-min-pass: 2` (não 1 execução só), pela mesma razão do CP09: um juiz LLM
+pode flutuar, e uma reprovação isolada não deveria derrubar o PR sozinha.
+
 ## Limitações conhecidas
 
 - A qualidade da matriz depende de o cenário trazer números; sem eles, o prompt produz
