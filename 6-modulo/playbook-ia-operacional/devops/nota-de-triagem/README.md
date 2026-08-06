@@ -122,6 +122,32 @@ ser lida em 10 segundos.
    pode aplicar rate limit sozinho; se exige aprovação, deixa de ser "imediata".
 3. **Janelas 10/15/20min** foram inferidas dos exemplares — confirmar com dados medidos.
 
+## Testes determinísticos (CP08)
+
+Config: [`promptfooconfig.yaml`](./promptfooconfig.yaml). Roda os 3 alertas reais acima contra
+dois provedores — **Anthropic** (`claude-haiku-4-5-20251001`) e **Google**
+(`gemini-3.5-flash`) — verificando os cinco rótulos, o handle `@palavra` em `ESCALAR PARA:`,
+o limite de 8 linhas, e os tetos operacionais de latência (≤5s) e custo (≤US$0,01).
+
+**Resultado real (`promptfoo eval`):**
+
+| Provider | Alerta 1 | Alerta 2 | Alerta 3 |
+|---|---|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | ✅ PASS (2,3s · US$0,0026) | ✅ PASS (1,3s · US$0,0024) | ✅ PASS (1,6s · US$0,0025) |
+| `google:gemini-3.5-flash` | ✅ PASS (1,6s · US$0,0036) | ✅ PASS (1,5s · US$0,0033) | ✅ PASS (1,4s · US$0,0033) |
+
+**6/6 passou.** Nenhum ajuste no prompt foi necessário — a saída já é curta e o formato de
+cinco campos é rígido o bastante para regex/contains pegarem qualquer desvio.
+
+**Um ajuste no provider, não no prompt:** a primeira rodada reprovou os 3 casos do Gemini só
+em latência/custo (7–12s, US$0,02–0,03) — não em conteúdo. O modelo estava gerando tokens de
+"thinking" por padrão mesmo numa tarefa de formatação fixa, sem ganho de qualidade. Ajuste:
+`generationConfig.thinkingConfig.thinkingBudget: 0` no provider do Gemini no
+`promptfooconfig.yaml` — não mexe no prompt em si, só desliga um modo de raciocínio que essa
+tarefa não precisa. Depois do ajuste, os três casos do Gemini caíram para ~1,5s e passaram.
+Esse é exatamente o tipo de trade-off latência/custo × modelo que o checkpoint pede para
+registrar: para uma tarefa de formato fixo, thinking ligado é custo puro, sem retorno.
+
 ## Limitações conhecidas
 
 - A qualidade da nota depende do alerta cru: se ele não trouxer sinal causal, a HIPÓTESE

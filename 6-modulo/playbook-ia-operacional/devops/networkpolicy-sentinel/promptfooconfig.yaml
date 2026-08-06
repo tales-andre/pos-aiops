@@ -1,0 +1,77 @@
+description: "CP08 — testes determinísticos da geração do hardening de NetworkPolicy contra o manifesto real do CP06"
+
+prompts:
+  - file://prompt-geracao.js
+
+providers:
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: anthropic-haiku-4.5
+  - id: google:gemini-3.5-flash
+    label: google-gemini-3.5-flash
+    config:
+      generationConfig:
+        thinkingConfig:
+          thinkingBudget: 0
+
+defaultTest:
+  assert:
+    - type: contains
+      value: "kind: NetworkPolicy"
+    - type: contains
+      value: "- Ingress"
+    - type: contains
+      value: "- Egress"
+    - type: not-contains
+      value: "- {}"
+    - type: contains
+      value: "5432"
+    - type: contains
+      value: "9200"
+    - type: contains
+      value: "app: relay"
+    - type: javascript
+      value: |
+        // toda regra de from/to tem, na linha ou no bloco acima, um comentário de fluxo
+        const regras = (output.match(/-\s+(from|to):/g) || []).length;
+        const comentarios = (output.match(/^\s*#/gm) || []).length;
+        return comentarios >= regras;
+    - type: latency
+      threshold: 5000
+    - type: cost
+      threshold: 0.01
+
+tests:
+  - description: "Manifesto permissivo do Sentinel (CP06) — geração da versão endurecida"
+    vars:
+      MANIFESTO_PERMISSIVO: |
+        # manifesto barrado pela revisão de segurança — permissivo demais
+        apiVersion: networking.k8s.io/v1
+        kind: NetworkPolicy
+        metadata:
+          name: sentinel-allow
+          namespace: sentinel-prod
+        spec:
+          podSelector: {}          # aplica a todos os pods do namespace
+          policyTypes:
+            - Ingress
+            - Egress
+          ingress:
+            - {}                   # libera QUALQUER origem
+          egress:
+            - {}                   # libera QUALQUER destino
+      REGRAS_PADRAO: |
+        NetworkPolicy para o namespace "sentinel-prod":
+        - pods do Sentinel só aceitam tráfego de entrada do Relay (consumo de
+          eventos) e do gateway de API da plataforma
+        - pods do Sentinel só fazem saída para: Forge (warehouse, porta 5432),
+          Cerebro (busca, porta 9200) e DNS interno
+        - nada de "allow all" em ingress ou egress
+        - política default-deny explícita no namespace
+        - toda regra precisa de comentário dizendo qual fluxo legítimo ela libera
+      MAPA_SERVICOS: |
+        Sentinel     → namespace sentinel-prod, pods com label app=sentinel
+        Relay        → namespace relay-prod,    pods com label app=relay
+        API gateway  → namespace edge,          pods com label app=api-gateway
+        Forge        → namespace forge-prod,    pods com label app=forge,   porta 5432 (Postgres do warehouse)
+        Cerebro      → namespace cerebro-prod,  pods com label app=cerebro, porta 9200 (Elasticsearch)
+        DNS interno  → namespace kube-system,   pods com label k8s-app=kube-dns, porta 53

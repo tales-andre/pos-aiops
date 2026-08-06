@@ -1,0 +1,58 @@
+description: "CP08 — testes determinísticos da Nota de Triagem contra os 3 alertas reais do CP02"
+
+prompts:
+  - file://prompt.md
+
+providers:
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: anthropic-haiku-4.5
+  - id: google:gemini-3.5-flash
+    label: google-gemini-3.5-flash
+    config:
+      generationConfig:
+        thinkingConfig:
+          thinkingBudget: 0
+
+defaultTest:
+  assert:
+    - type: contains
+      value: "ALERTA:"
+    - type: contains
+      value: "IMPACTO:"
+    - type: contains
+      value: "HIPÓTESE INICIAL:"
+    - type: contains
+      value: "AÇÃO IMEDIATA:"
+    - type: contains
+      value: "ESCALAR PARA:"
+    - type: regex
+      value: "ESCALAR PARA:.*@\\w+"
+    - type: javascript
+      value: |
+        // nota concisa: no máximo 8 linhas não-vazias
+        const linhas = output.trim().split("\n").filter(l => l.trim().length > 0);
+        return linhas.length <= 8;
+    - type: latency
+      threshold: 5000
+    - type: cost
+      threshold: 0.01
+
+tests:
+  - description: "Alerta 1 — Sentinel autoscaler no teto (stark-industries)"
+    vars:
+      ALERTA_CRU: >
+        2026-05-12 14:02:09 UTC [Sentinel] autoscaler hit max replicas (60/60) on sentinel-api,
+        queue depth on Relay growing 2k/min, CPU avg 88%, tenant stark-industries
+        sending 4x baseline volume after onboarding new region
+
+  - description: "Alerta 2 — Relay taxa de rejeição (wakanda-systems)"
+    vars:
+      ALERTA_CRU: >
+        2026-05-13 03:11:00 UTC [Relay] ingest reject rate 6% for 8min, tenant wakanda-systems,
+        buffer saturated after deploy 02:55
+
+  - description: "Alerta 3 — Forge consumer lag"
+    vars:
+      ALERTA_CRU: >
+        2026-05-13 11:40:22 UTC [Forge] consumer lag 9min and climbing, batch forge-batch-ingest
+        delayed after previous job failure, downstream Sentinel starting to lag

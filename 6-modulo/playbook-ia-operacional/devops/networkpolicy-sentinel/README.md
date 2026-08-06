@@ -203,6 +203,54 @@ um resultado incompleto.
   simulador de NetworkPolicy que a v2 permite Relay→Sentinel e nega qualquer outra
   origem — o teste que a v1 teria reprovado.
 
+## Testes determinísticos (CP08)
+
+Config: [`promptfooconfig.yaml`](./promptfooconfig.yaml) + [`prompt-geracao.js`](./prompt-geracao.js).
+Testa só o **Prompt 1 (geração)** contra o manifesto/regras/mapa reais do CP06, com
+**Anthropic** (`claude-haiku-4-5-20251001`) e **Google** (`gemini-3.5-flash`, thinking
+desligado), verificando: `kind: NetworkPolicy` com `Ingress` e `Egress` em `policyTypes`;
+ausência de `- {}` (allow-all); egress liberando Forge:5432 e Cerebro:9200; ingress liberando
+`app: relay`; e que toda regra `from`/`to` tem comentário — mais os tetos de latência (≤5s) e
+custo (≤US$0,01).
+
+**Por que só o Prompt 1:** o CP08 pede asserts "na NetworkPolicy gerada" — isso é a saída da
+geração. O Prompt 2 (verificação) produz uma tabela de veredito, não YAML, e pertence à camada
+de avaliação por julgamento (CP09), não a asserts determinísticos de estrutura.
+
+**`prompt-geracao.js` em vez de duplicar o texto:** `prompt.md` guarda os dois prompts da
+cadeia (geração + verificação) num único arquivo, como documentado no CP07. Para o
+`promptfooconfig.yaml` rodar só o Prompt 1 sem copiar seu texto para um segundo arquivo (o que
+criaria duas fontes de verdade divergentes), o prompt do config é uma função JS que lê
+`prompt.md` em tempo de execução, extrai o bloco de código sob o heading "Prompt 1 — Geração" e
+substitui os `{{placeholders}}`. `prompt.md` continua sendo a única fonte do texto do prompt.
+
+**Resultado real (`promptfoo eval`):**
+
+| Provider | Resultado |
+|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | conteúdo ✅ (todos os 6 asserts de estrutura) · ❌ latência 5,2s (teto 5,0s) |
+| `google:gemini-3.5-flash` | conteúdo ✅ (todos os 6 asserts de estrutura) · ❌ latência 16,4s |
+
+**0/2 passou no teto de latência — 2/2 corretos em conteúdo**, incluindo o achado que o CP06 já
+tinha documentado como crítico na v1 original: aqui, direto na primeira geração testada, ambos
+os modelos já produziram `namespaceSelector` + `podSelector` combinados corretamente (a correção
+que a v1 do CP06 só alcançou depois da verificação adversarial). Não dá para atribuir isso a
+melhoria de modelo com confiança — é uma amostra de 1 execução por provider — mas é consistente
+com o prompt de geração já ter incorporado o passo de raciocínio que faltava.
+
+**Nenhum ajuste no prompt ou no teste — a reprovação é um achado de trade-off legítimo.**
+Diferente do `triagem-de-pods` (saída longa por natureza), aqui a saída é só o YAML de duas
+políticas — curta. O motivo da latência é o **raciocínio de segurança em si**: mapear cada
+regra do padrão à contraparte exata, decidir `namespaceSelector` vs. `podSelector`, e verificar
+porta contra o mapa de serviços (os cinco passos de CoT do Prompt 1) consome tempo de geração
+mesmo com "thinking" desligado no Gemini, porque o CoT está escrito no próprio prompt, não num
+modo de raciocínio do provider. **Conclusão registrada para a curadoria:** para um artefato de
+segurança onde a v1 do próprio CP06 mostrou que pular o raciocínio produz um erro crítico
+silencioso, 5s é um teto desalinhado com o que a tarefa exige — a alternativa (cortar o CoT para
+caber no teto) reintroduziria exatamente o risco que a Chain-of-Verification existe para pegar.
+O trade-off aqui não é "modelo mais barato": é "orçamento de latência maior para prompts que
+tocam segurança", uma exceção explícita, não uma correção do prompt.
+
 ## Limitações conhecidas
 
 - Assume o label automático de namespace `kubernetes.io/metadata.name` (padrão desde

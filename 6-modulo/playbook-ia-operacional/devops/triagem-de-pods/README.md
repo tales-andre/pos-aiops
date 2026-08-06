@@ -86,6 +86,49 @@ Rodado contra os três snapshots de exemplo do desafio, com **Gemini 3.5 Flash**
   custo. Alternativa mais barata (Flash Lite) fica anotada para o CP08, onde o
   teto de custo por chamada pesa na decisão.
 
+## Testes determinísticos (CP08)
+
+Config: [`promptfooconfig.yaml`](./promptfooconfig.yaml). Roda os 3 snapshots reais acima
+contra **Anthropic** (`claude-haiku-4-5-20251001`) e **Google** (`gemini-3.5-flash`,
+thinking desligado), verificando por caso: Entrada 1 cita o pod e a causa (OOMKilled/memória);
+Entrada 2 cita os dois pods e as duas causas (tag `2.9.2`/ImagePullBackOff, cpu/Insufficient);
+Entrada 3 declara `Problemáticos: 0` e não usa nenhum rótulo de severidade — mais os tetos de
+latência (≤5s) e custo (≤US$0,01).
+
+**Resultado real (`promptfoo eval`):**
+
+| Provider | Entrada 1 | Entrada 2 | Entrada 3 |
+|---|---|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | conteúdo ✅ · ❌ latência 10,6s | conteúdo ✅ · ❌ latência 10,4s | conteúdo ✅ · ❌ latência 7,2s |
+| `google:gemini-3.5-flash` | conteúdo ✅ · ❌ latência 18,0s | conteúdo ✅ · ❌ latência 8,5s · ❌ custo US$0,011 | erro transitório da API (503 "high demand") na rodada registrada |
+
+**0/6 passou nos tetos de latência/custo — 6/6 corretos em conteúdo.** Nenhuma reprovação
+por conteúdo: em toda execução, o pod certo, a causa certa (OOMKilled, tag `2.9.2`,
+`Insufficient cpu`) e a ausência de falso positivo na Entrada 3 apareceram. O que reprova
+sistematicamente é o teto de 5s/US$0,01 contra o formato de saída deste prompt.
+
+**Dois ajustes de teste, um achado de trade-off que não foi "corrigido":**
+
+1. **Ajuste no assert, não no prompt.** A primeira rodada reprovava a Entrada 3 também em
+   conteúdo, por `contains: "Problemáticos: 0"` — mas o prompt usa markdown
+   (`**Problemáticos:** 0`), então o `**` quebra a correspondência literal. Troquei para
+   `regex: "Problemáticos:\*{0,2}\s*0"`, que aceita com ou sem negrito. O prompt estava certo;
+   o teste que assumia formato errado.
+2. **Mesmo ajuste de `thinkingConfig.thinkingBudget: 0`** do Gemini aplicado aqui (ver
+   `nota-de-triagem`) — reduziu a latência do Gemini, mas não o suficiente: este prompt exige
+   um relatório de múltiplas seções (resumo, causa provável, ação, pontos cegos), então mesmo
+   sem "thinking" extra o texto gerado é longo demais para 5s de forma consistente nos dois
+   provedores.
+3. **O que não foi ajustado, de propósito:** não afrouxei o prompt para gerar saída mais curta
+   nem troquei para um modelo mais rápido de qualidade inferior (ex.: Flash Lite, cogitado na
+   seção Curadoria acima). A saída detalhada por seção é o que torna a triagem útil sob
+   pressão — cortá-la para caber em 5s pioraria o produto para economizar num teto que foi
+   fixado igual para os três prompts do CP08, mas que só faz sentido operacional para os dois
+   de saída curta (nota-de-triagem, networkpolicy-sentinel). **Recomendação registrada:** o
+   teto de latência para prompts de relatório extenso como este devia ser maior (o enunciado do
+   próprio CP01 já citava Flash Lite como alternativa mais barata para quem precisar caber num
+   orçamento apertado) — decisão para o time definir, não para o teste forçar silenciosamente.
+
 ## Limitações conhecidas
 
 - Diagnostica **apenas com o que está no snapshot**: se faltarem logs ou eventos,
