@@ -13,8 +13,9 @@ Compõe o material dos projetos da pós-graduação em AIOps e Inteligência Art
 ```
 <categoria>/
   <nome-do-prompt>/
-    prompt.md    # o prompt em si (conteúdo que será copiado/usado)
-    README.md    # metadados e documentação do prompt
+    prompt.md      # o prompt em si (conteúdo que será copiado/usado)
+    README.md      # metadados e documentação do prompt
+    execucoes/     # opcional — evidência de execução real, ver abaixo
 ```
 
 Regras:
@@ -24,6 +25,16 @@ Regras:
 - **`README.md`** começa com o **mesmo frontmatter** do `prompt.md` e, abaixo, traz a documentação humana do prompt: objetivo, quando usar, exemplo de uso/saída, limitações conhecidas.
 
 A separação `prompt.md` × `README.md` continua intencional — `prompt.md` carrega o texto + metadados consumíveis por ferramentas; `README.md` adiciona a camada humana (objetivo, quando usar, exemplo, limitações) acima do mesmo frontmatter.
+
+### Desvio consciente do template: `execucoes/`
+
+O template `prompt-registry` não prevê essa pasta. Foi adicionada porque este playbook nasceu de
+um desafio que exige **execução real** de cada prompt como evidência, não só a documentação de como
+ele deveria se comportar. Cada arquivo em `execucoes/` guarda o input real usado e a saída real do
+modelo (ou, para cadeias/loops de refino, todas as iterações), sem edição. A seção "Execução" do
+`README.md` resume o resultado e linka para o arquivo bruto correspondente — o README documenta, a
+`execucoes/` prova. Ao promover um prompt à convenção estrita do template (ex.: publicá-lo fora
+deste contexto didático), `execucoes/` pode ser removida sem quebrar `prompt.md`/`README.md`.
 
 ## Ao adicionar um novo prompt
 
