@@ -26,4 +26,4 @@ Entram aqui prompts relacionados a:
 - [causa-raiz](./causa-raiz/) — analisa a causa-raiz de uma degradação cruzando configuração, métricas e logs, separando causa de sintoma.
 - [backpressure-relay](./backpressure-relay/) — apoia uma decisão de backpressure comparando opções contra as restrições, com matriz de decisão e recomendação em camadas.
 - [migracao-forge](./migracao-forge/) — cadeia de três prompts que conduz a migração de um pipeline de lote para orientado a eventos (diagnóstico → estratégia em fases → plano executável).
-- [networkpolicy-sentinel](./networkpolicy-sentinel/) — endurece um manifesto de NetworkPolicy permissivo em default-deny + allow least-privilege, com loop de verificação adversarial e critério de parada.
+- [networkpolicy-sentinel](./networkpolicy-sentinel/) — endurece um manifesto de NetworkPolicy permissivo em default-deny + allow least-privilege, com cadeia de geração + verificação (Chain-of-Verification) e critério de parada.

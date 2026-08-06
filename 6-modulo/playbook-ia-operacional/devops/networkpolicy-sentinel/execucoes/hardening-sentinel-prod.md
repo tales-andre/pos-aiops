@@ -1,10 +1,9 @@
 ## Execução — manifesto do Sentinel (namespace `sentinel-prod`)
 
 **Modelo:** Claude Opus 5 · temperatura 0.1 (manifesto de segurança: reprodutibilidade prioritária
-sobre variação). Revisão conduzida adotando o papel de revisor de segurança adversarial — sem
-reaproveitar o raciocínio da geração, para não herdar seus pontos cegos.
+sobre variação).
 
-### v1 — primeira geração
+### v1 — geração (CoVe passo 1)
 
 ```yaml
 # default-deny explícita: sozinha, já bloqueia 100% do tráfego do namespace.
@@ -73,42 +72,24 @@ spec:
 # nenhuma
 ```
 
-### Verificação 1 — perguntas de um revisor de segurança
+### Verificação 1 (CoVe passos 2 e 3 — perguntas planejadas e respondidas isoladamente)
 
-1. **Os `podSelector` de `from`/`to` acima estão restritos ao namespace da política ou a qualquer
-   pod do cluster com aquele label?** Relay está em `relay-prod`, API gateway em `edge`, Forge em
-   `forge-prod`, Cerebro em `cerebro-prod`, DNS em `kube-system` — todos diferentes de
-   `sentinel-prod`. Um `podSelector` sozinho em `from`/`to` só enxerga pods **do mesmo namespace**
-   onde a `NetworkPolicy` está definida. Sem `namespaceSelector`, nenhuma dessas seis regras
-   corresponde a pod nenhum, e o comportamento real seria negar tudo — o oposto do declarado.
-   **CRÍTICO.**
-2. **A regra de DNS libera UDP e TCP?** CoreDNS/kube-dns responde consultas por UDP normalmente,
-   mas cai para TCP quando a resposta excede o tamanho do datagrama (respostas grandes, DNSSEC).
-   A v1 só libera UDP/53. Sob certas consultas, a resolução de nomes falharia de forma
-   intermitente e difícil de diagnosticar. **ALTO.**
-3. **O `policyTypes` da política de allow inclui `Egress` mesmo sem nenhuma necessidade de ingress
-   adicional além do já coberto?** Não é erro, mas vale confirmar que não sobrou nenhum
-   `policyTypes` declarado sem `ingress`/`egress` correspondente — aqui os dois têm regra, então
-   está correto. Sem achado.
-4. **As portas de ingress (Relay → Sentinel, API gateway → Sentinel) foram restringidas?** O mapa
-   de serviços não declara porta para essas duas entradas, e a v1 corretamente não inventou —
-   mas isso significa ingress liberado em **qualquer porta** dos pods do Sentinel a partir dessas
-   duas origens. É menos grave que allow-all (a origem continua restrita), mas é uma superfície
-   maior do que o necessário. Vale registrar como item para o revisor decidir, não como bug do
-   prompt. **MÉDIO, mas fora do escopo do que o mapa de serviços autoriza resolver sozinho.**
-5. **A política de default-deny cobre `Egress` mesmo sem nenhuma política de allow para DNS
-   *antes* de a política de allow existir?** Ordem de aplicação de NetworkPolicy no Kubernetes não
-   é sequencial — as duas políticas coexistem e o efeito é a união dos allows sobre a negação
-   base. Não há problema de ordem aqui. Sem achado.
-6. **O nome dos objetos seguirá convenção usada em outras NetworkPolicy do cluster?** Não há dado
-   suficiente no mapa de serviços ou no padrão para confirmar convenção de nomenclatura além do que
-   foi pedido. Fora do escopo verificável com o material disponível.
+| # | Veredito | Severidade | Evidência no YAML |
+|---|---|---|---|
+| 1 | ACHADO | **CRÍTICO** | Relay/relay-prod, API gateway/edge, Forge/forge-prod, Cerebro/cerebro-prod, DNS/kube-system — todos fora de `sentinel-prod`. Os seis peers usam só `podSelector`, sem `namespaceSelector`. `podSelector` isolado só enxerga pods do namespace da política → nenhuma regra casa → efeito real = negar tudo |
+| 2 | OK | NENHUM | Não há `namespaceSelector` presente ainda; a falha é a ausência dele (pergunta 1), não OR indevido |
+| 3 | OK | NENHUM | `podSelector: {}` só na `default-deny-all`; nenhum `- {}` em ingress/egress da allow |
+| 4 | ACHADO | **ALTO** | Regra de DNS libera só `UDP/53`. Falta `TCP/53` para respostas grandes/DNSSEC/fallback → resolução intermitente e difícil de diagnosticar |
+| 5 | OK (parcial) | MÉDIO | Todos os fluxos do padrão têm regra. Mas ingress de Relay e de API gateway não tem porta no mapa de serviços → liberado em qualquer porta do Sentinel. Não é bug (o mapa não declara a porta); registrar como pergunta em aberto |
+| 6 | OK | NENHUM | `default-deny-all` com `podSelector: {}` e `policyTypes` sem regras → nega 100% |
+| 7 | OK | NENHUM | 5432, 9200, 53 — todas presentes no mapa de serviços; nenhuma inventada |
+| 8 | ACHADO | MÉDIO | A correção da pergunta 1 vai exigir `namespaceSelector`, que dependerá do label automático de namespace — precisa ser declarado como pré-condição, não deixado implícito |
 
-**Veredito da rodada 1:** 1 achado CRÍTICO (namespaceSelector ausente — a política, como escrita,
-não libera o tráfego que deveria e na prática se comporta como default-deny total, quebrando
-Sentinel/Relay/Forge/Cerebro em produção) e 1 achado ALTO (DNS só UDP). Não passa. Segue para v2.
+**VEREDITO DA RODADA 1: REPROVADO** — 1 CRÍTICO (seletores cross-namespace não casam; manifesto se
+comporta como default-deny total e quebra Sentinel/Relay/Forge/Cerebro em produção) e 1 ALTO (DNS só
+UDP). Segue para v2.
 
-### v2 — refino
+### v2 — refino (CoVe passo 4 — versão verificada)
 
 ```yaml
 # default-deny explícita: sozinha, já bloqueia 100% do tráfego do namespace.
@@ -205,33 +186,19 @@ spec:
 #   regra correspondente para de casar. Vale confirmar antes de aplicar em produção.
 ```
 
-### Verificação 2 — segunda rodada, adversarial
+### Verificação 2 (segunda rodada de CoVe, adversarial)
 
-1. **O namespaceSelector + podSelector combinado resolve o achado crítico?** Sim — agora cada peer
-   exige as duas condições simultaneamente, e como está dentro do mesmo item de `from`/`to`
-   (mesmo nível de indentação, um único elemento de lista), o Kubernetes interpreta como AND, não
-   como duas entradas separadas. Confirma-se a correção.
-2. **DNS cobre os dois protocolos?** Sim, UDP e TCP na porta 53, ambos com o mesmo peer. Achado ALTO
-   fechado.
-3. **Alguma regra ainda usa `podSelector: {}` ou `- {}` fora da política de default-deny?** Não —
-   inspecionado item a item, todo `podSelector` na política de allow tem `matchLabels`, e toda
-   entrada de `ingress`/`egress` tem `from`/`to` com peer explícito.
-4. **A dependência do label automático de namespace foi declarada, ou ficou implícita?** Foi
-   declarada explicitamente nas perguntas em aberto — isso é o correto a fazer, porque é uma
-   suposição sobre o ambiente que o prompt não tem como confirmar sozinho, mas classificaria como
-   crítica caso a suposição fosse falsa e ficasse silenciosa. Como está registrada e não escondida
-   dentro da lógica da regra, considero adequada para produção assim que a suposição for validada
-   — não é um bug do manifesto, é uma pré-condição de ambiente corretamente exposta.
-5. **Existe algum caminho de tráfego que o padrão exige e que ficou de fora?** Conferindo contra as
-   cinco regras do padrão uma a uma: ingress de Relay ✓, ingress de API gateway ✓, egress para
-   Forge:5432 ✓, egress para Cerebro:9200 ✓, egress para DNS ✓, nenhum allow-all em nenhum lado ✓,
-   default-deny explícita e separada ✓, todo peer comentado ✓. Nenhuma lacuna restante frente ao
-   padrão fornecido.
-6. **A regra de ingress permanece mais aberta que o necessário quanto à porta?** Sim, mas isso não é
-   um defeito do manifesto — é a consequência correta de o mapa de serviços não declarar a porta do
-   Sentinel, e o prompt está proibido de inventar. Continua registrado como pergunta em aberto, não
-   como achado a corrigir sozinho.
+| # | Veredito | Severidade | Evidência no YAML |
+|---|---|---|---|
+| 1 | OK | NENHUM | Cada peer cross-namespace agora tem `namespaceSelector` + `podSelector` no mesmo item; achado crítico da rodada 1 fechado |
+| 2 | OK | NENHUM | `namespaceSelector` e `podSelector` no mesmo elemento da lista → AND, não OR |
+| 3 | OK | NENHUM | Nenhum `podSelector: {}` fora da default-deny; nenhum `- {}` |
+| 4 | OK | NENHUM | DNS agora com `UDP/53` e `TCP/53` no mesmo peer; achado ALTO fechado |
+| 5 | OK | NENHUM | Ingress Relay ✓, ingress API gateway ✓, egress Forge:5432 ✓, egress Cerebro:9200 ✓, egress DNS ✓, sem allow-all, default-deny explícita, todo peer comentado |
+| 6 | OK | NENHUM | `default-deny-all` inalterada; nega 100% |
+| 7 | OK | NENHUM | Portas 5432/9200/53 conferem com o mapa |
+| 8 | OK | MÉDIO (documentado) | Dependência do label automático de namespace declarada no bloco de perguntas em aberto — pré-condição exposta, não implícita |
 
-**Veredito da rodada 2:** zero achados CRÍTICO ou ALTO. As únicas pendências restantes são as duas
-perguntas em aberto, ambas dependentes de informação que não está no mapa de serviços fornecido —
-critério de parada atingido. v2 é a versão final para revisão humana.
+**VEREDITO DA RODADA 2: APROVADO** — zero achados CRÍTICO ou ALTO. As duas pendências restantes
+dependem de dado fora do mapa de serviços e estão documentadas. Critério de Parada atingido. v2 é a
+versão final para revisão humana.
