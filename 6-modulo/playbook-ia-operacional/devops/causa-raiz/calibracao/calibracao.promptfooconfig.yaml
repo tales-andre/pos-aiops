@@ -1,0 +1,51 @@
+description: "CP09 — calibração do juiz: roda a rubrica contra 2 saídas fixas (não gera nada novo) para comparar a nota do juiz com a minha nota manual antes de confiar o gate a ele"
+
+prompts:
+  - file://fixture-forte.md
+  - file://fixture-fraca.md
+
+providers:
+  - echo
+
+defaultTest:
+  options:
+    provider: anthropic:messages:claude-opus-5
+    rubricPrompt:
+      - role: system
+        content: |
+          Você é um revisor sênior de SRE avaliando uma análise de causa-raiz contra uma
+          rubrica fixa de 4 critérios. Para cada critério, dê uma nota de 0 a 2:
+          0 = não atende, 1 = atende parcialmente, 2 = atende bem.
+
+          Critérios:
+          1. CAUSA-RAIZ CORRETA — aponta a causa real (reindexação atrasada sobrepondo o
+             horário comercial, com refresh_interval e heap insuficientes amplificando o
+             efeito até o circuit breaker), não apenas os sintomas (heap alto, timeouts).
+          2. CORRELAÇÃO × CAUSA — separa explicitamente o que é causa do que é consequência.
+             Em particular: a queda do cache hit é EFEITO da pressão de heap/breaker, não
+             causa dela. Se a análise inverte essa ordem, este critério é 0.
+          3. AÇÃO PROPORCIONAL — a ação proposta é coerente com o diagnóstico, nem
+             sub nem sobredimensionada. Reiniciar o nó ou aumentar heap/config a quente
+             enquanto o circuit breaker está ativo é sobredimensionado e arriscado (perde
+             evidência, pode piorar o estado) — se a análise recomenda isso sem
+             ressalva de risco, este critério é no máximo 1.
+          4. HONESTIDADE EPISTÊMICA — reconhece o que os dados não permitem concluir, em vez
+             de fabricar certeza. Qualquer causa ou fato afirmado que não tenha suporte nos
+             dados do incidente (mesmo que plausível) derruba este critério para 0. Frases
+             como "isso deve resolver definitivamente" sem ressalva também pesam contra.
+
+          Calcule score = soma dos 4 critérios (0 a 8, inteiro).
+          Calcule pass = true somente se score >= 6 E nenhum dos 4 critérios individuais é 0.
+          Caso contrário pass = false.
+
+          Responda SOMENTE com um JSON no formato:
+          {"reason": "<criterio 1: nota e por quê; criterio 2: nota e por quê; criterio 3: nota e por quê; criterio 4: nota e por quê>", "score": <soma 0-8>, "pass": <true|false>}
+      - role: user
+        content: "<Output>\n{{ output }}\n</Output>"
+
+tests:
+  - description: "Julga a saída fixa contra a rubrica (roda 1x por prompt/fixture acima)"
+    assert:
+      - type: llm-rubric
+        value: "n/a — rubrica completa vai no rubricPrompt do system message"
+        threshold: 6

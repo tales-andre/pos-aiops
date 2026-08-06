@@ -1,0 +1,112 @@
+description: "CP09 — gate de qualidade (LLM-as-judge) para a análise de causa-raiz, contra o incidente real do CP03"
+
+prompts:
+  - file://prompt.md
+
+providers:
+  # max_tokens explícito nos dois: causa-raiz exige 9 seções (mais longo que os prompts
+  # do CP08) e o default do provider cortava a saída no meio — ver curadoria.
+  - id: anthropic:messages:claude-haiku-4-5-20251001
+    label: anthropic-haiku-4.5
+    config:
+      max_tokens: 8192
+  - id: google:gemini-3.5-flash
+    label: google-gemini-3.5-flash
+    config:
+      generationConfig:
+        thinkingConfig:
+          thinkingBudget: 0
+        maxOutputTokens: 8192
+
+defaultTest:
+  options:
+    # Juiz: Claude Opus 5 — modelo diferente dos dois que geram a análise, para reduzir
+    # o viés de um modelo se auto-avaliar (nenhum dos dois geradores é o juiz).
+    provider:
+      id: anthropic:messages:claude-opus-5
+      config:
+        max_tokens: 4096
+    # rubricPrompt calibrado em calibracao/ contra 2 fixtures (uma forte, uma fraca) —
+    # ver calibracao/README.md. Nota do juiz bateu com a nota manual (forte: 8/8 nos dois;
+    # fraca: 0/8 no juiz vs. 1/8 manual, diferença de 1 ponto, dentro da tolerância).
+    rubricPrompt:
+      - role: system
+        content: |
+          Você é um revisor sênior de SRE avaliando uma análise de causa-raiz contra uma
+          rubrica fixa de 4 critérios. Para cada critério, dê uma nota de 0 a 2:
+          0 = não atende, 1 = atende parcialmente, 2 = atende bem.
+
+          Critérios:
+          1. CAUSA-RAIZ CORRETA — aponta a causa real (reindexação atrasada sobrepondo o
+             horário comercial, com refresh_interval e heap insuficientes amplificando o
+             efeito até o circuit breaker), não apenas os sintomas (heap alto, timeouts).
+          2. CORRELAÇÃO × CAUSA — separa explicitamente o que é causa do que é consequência.
+             Em particular: a queda do cache hit é EFEITO da pressão de heap/breaker, não
+             causa dela. Se a análise inverte essa ordem, este critério é 0.
+          3. AÇÃO PROPORCIONAL — a ação proposta é coerente com o diagnóstico, nem
+             sub nem sobredimensionada. Reiniciar o nó ou aumentar heap/config a quente
+             enquanto o circuit breaker está ativo é sobredimensionado e arriscado (perde
+             evidência, pode piorar o estado) — se a análise recomenda isso sem
+             ressalva de risco, este critério é no máximo 1.
+          4. HONESTIDADE EPISTÊMICA — reconhece o que os dados não permitem concluir, em vez
+             de fabricar certeza. Qualquer causa ou fato afirmado que não tenha suporte nos
+             dados do incidente (mesmo que plausível) derruba este critério para 0. Frases
+             como "isso deve resolver definitivamente" sem ressalva também pesam contra.
+
+          Calcule score = soma dos 4 critérios (0 a 8, inteiro).
+          Calcule pass = true somente se score >= 6 E nenhum dos 4 critérios individuais é 0.
+          Caso contrário pass = false.
+
+          Responda SOMENTE com um JSON no formato:
+          {"reason": "<criterio 1: nota e por quê; criterio 2: nota e por quê; criterio 3: nota e por quê; criterio 4: nota e por quê>", "score": <soma 0-8>, "pass": <true|false>}
+      - role: user
+        content: "<Output>\n{{ output }}\n</Output>"
+  assert:
+    - type: llm-rubric
+      value: "n/a — rubrica completa no rubricPrompt acima"
+      threshold: 6
+
+tests:
+  - description: "Degradação do Cerebro (CP03) — reindexação atrasada + refresh_interval/heap insuficientes"
+    vars:
+      CONFIG_CLUSTER: |
+        # cerebro.yaml — configuração do cluster Elasticsearch (repositório de infra)
+        cerebro:
+          shards: 12
+          replicas_per_shard: 1
+          jvm_heap: 8g
+          refresh_interval: 1s
+          reindex_job:
+            schedule: "0 2 * * *"     # roda todo dia às 02:00
+            avg_duration_min: 90      # normalmente termina ~03:30
+          query_cache:
+            enabled: true
+            size_mb: 512
+      SERIE_METRICAS: |
+        timestamp              search_p99_ms   indexed_docs_per_s   heap_used_pct   cache_hit_pct
+        2026-05-13 08:00 UTC   850             4200                 61              74
+        2026-05-13 08:30 UTC   1100            4100                 68              71
+        2026-05-13 09:00 UTC   2300            9800                 79              58
+        2026-05-13 09:30 UTC   4100            11200                88              41
+        2026-05-13 10:00 UTC   6700            12400                94              29
+      TRECHO_LOGS: |
+        [2026-05-13T08:02:11,540][INFO ][o.e.t.LoggingTaskListener              ][cerebro-node-3] reindex task [88123] (scheduled 02:00) progress, created [3.8M]/[10M] docs (38%)
+        [2026-05-13T08:14:33,019][WARN ][o.e.m.j.JvmGcMonitorService            ][cerebro-node-3] [gc][young] duration [620ms], collections [1] in [10s], heap [4.9gb]->[3.1gb]/[8gb]
+        [2026-05-13T08:41:07,222][INFO ][o.e.i.IndexingMemoryController         ][cerebro-node-3] now throttling indexing for shard [logs-2026.05][7]: segment writing can't keep up
+        [2026-05-13T09:03:55,810][WARN ][o.e.t.ThreadPool                       ][cerebro-node-3] write thread pool queue at [150/200]
+        [2026-05-13T09:12:48,402][WARN ][o.e.m.j.JvmGcMonitorService            ][cerebro-node-3] [gc][old] duration [1.1s], collections [2] in [60s], heap [6.3gb]->[5.9gb]/[8gb]
+        [2026-05-13T09:20:02,118][INFO ][o.e.t.LoggingTaskListener              ][cerebro-node-3] reindex task [88123] (scheduled 02:00) progress, created [4.0M]/[10M] docs (40%)
+        [2026-05-13T09:31:17,653][WARN ][o.e.i.b.HierarchyCircuitBreakerService ][cerebro-node-3] [parent] usage [6.9gb/8gb] (86%), approaching limit
+        [2026-05-13T09:44:29,901][WARN ][o.e.s.SearchService                    ][cerebro-node-3] slow query on shard [logs-2026.05][7] took [2380ms]
+        [2026-05-13T09:51:08,377][WARN ][o.e.t.ThreadPool                       ][cerebro-node-3] write thread pool queue at [188/200]
+        [2026-05-13T09:58:41,102][WARN ][o.e.t.ThreadPool                       ][cerebro-node-3] write thread pool queue full [200/200], rejecting bulk — EsRejectedExecutionException
+        [2026-05-13T09:58:43,210][WARN ][o.e.m.j.JvmGcMonitorService            ][cerebro-node-3] [gc][old] duration [1.8s], collections [4] in [60s], heap [7.6gb]->[7.4gb]/[8gb]
+        [2026-05-13T09:58:44,005][INFO ][o.e.t.LoggingTaskListener              ][cerebro-node-3] reindex task [88123] (scheduled 02:00) still running, created [4.1M]/[10M] docs (41%), ETA unknown
+        [2026-05-13T09:58:45,889][WARN ][o.e.i.IndexingMemoryController         ][cerebro-node-3] indexing buffer above limit, throttling shard [logs-2026.05][7]
+        [2026-05-13T09:58:46,330][DEBUG][o.e.s.query.QueryPhase                 ][cerebro-node-3] shard [logs-2026.05][7] search took [5031ms] (timeout [5000ms])
+        [2026-05-13T09:58:46,512][ERROR][o.e.s.SearchService                    ][cerebro-node-3] search returned partial results: 11/12 shards succeeded
+        [2026-05-13T09:58:46,701][WARN ][o.e.i.b.HierarchyCircuitBreakerService ][cerebro-node-3] [parent] circuit breaker tripped, usage [7.7gb/8gb] (96%) over limit
+        [2026-05-13T09:58:47,001][WARN ][o.e.i.cache.query.IndicesQueryCache    ][cerebro-node-3] query cache eviction rate spiking, hit_ratio dropped to 0.29
+        [2026-05-13T10:01:12,778][ERROR][o.e.s.SearchService                    ][cerebro-node-3] CircuitBreakingException: [parent] Data too large, would be [7.9gb/8gb]
+        [2026-05-13T10:03:39,255][WARN ][o.e.t.ThreadPool                       ][cerebro-node-3] write thread pool rejected [1284] bulk requests in last 5min
+        [2026-05-13T10:05:50,640][ERROR][o.e.s.SearchService                    ][cerebro-node-3] all shards failed for index [logs-2026.05] on 3 of last 20 queries

@@ -139,6 +139,68 @@ Registro do que nenhum artefato isolado entregava — é o argumento para manter
 - **Teste de armadilha:** injetar um pacote em que o sinal mais dramático é consequência óbvia de um sinal discreto anterior. O Passo 4 deve pegar.
 - **Teste de sanitização:** rodar o pacote pseudonimizado (`NODE_C`, `INDEX_A`, timestamps deslocados) e confirmar que a cadeia causal sobrevive intacta. Se a análise degradar, a camada de sanitização está redigindo demais.
 
+## Gate de qualidade — LLM-as-judge (CP09)
+
+Determinismo (regex/contains, CP08) não pega qualidade de raciocínio — causa-raiz não tem
+resposta única verificável por regex. Este gate usa um segundo LLM como juiz, aplicando uma
+rubrica fixa contra a análise gerada, toda vez que o prompt mudar.
+
+### Rubrica (critérios, escala, corte)
+
+Quatro critérios, cada um de **0 a 2** (0 = não atende, 1 = parcial, 2 = atende):
+
+1. **Causa-raiz correta** — aponta a causa real (reindexação atrasada sobrepondo o horário
+   comercial, com `refresh_interval`/heap insuficientes amplificando até o circuit breaker),
+   não apenas os sintomas (heap alto, timeouts).
+2. **Correlação × causa** — separa o que é causa do que é consequência (a queda do cache hit
+   é efeito da pressão de heap/breaker, não causa dela).
+3. **Ação proporcional** — a ação proposta é coerente com o diagnóstico, sem sobre nem
+   subdimensionar (reiniciar nó ou subir heap a quente com o breaker ativo é sobredimensionado).
+4. **Honestidade epistêmica** — reconhece o que os dados não permitem concluir, em vez de
+   fabricar certeza.
+
+**Corte de aprovação:** nota total **≥ 6** (de 0 a 8) **e nenhum critério zerado** — as duas
+condições são exigidas juntas; nem uma soma alta cobre um critério zerado, nem o inverso.
+
+### Config e juiz
+
+[`promptfooconfig.yaml`](./promptfooconfig.yaml) gera a análise de causa-raiz de verdade
+(mesmos dois providers do CP08 — `claude-haiku-4-5-20251001` e `gemini-3.5-flash`) contra o
+incidente real do CP03, e julga cada saída com um **terceiro modelo, `claude-opus-5`**,
+diferente dos dois geradores — para o juiz não avaliar a própria saída. O `rubricPrompt`
+customizado instrui o juiz a computar os 4 critérios, somar (`score`) e aplicar a regra
+composta de `pass` ele mesmo (o `threshold: 6` do assert é uma segunda trava, não a única).
+
+**Calibração do juiz** contra minha própria nota manual, em duas fixtures (uma forte, uma
+deliberadamente fraca) antes de confiar o gate: [`calibracao/README.md`](./calibracao/README.md).
+Maior divergência: 1 ponto num critério — dentro da tolerância pedida pelo checkpoint. Nenhum
+ajuste no `rubricPrompt` foi necessário.
+
+### Resultado real (`promptfoo eval`)
+
+| Provider | Score | Gate |
+|---|---|---|
+| `anthropic:messages:claude-haiku-4-5-20251001` | **7/8** | ✅ PASS |
+| `google:gemini-3.5-flash` | **6/8** | ❌ **FAIL** — critério 4 (honestidade) zerado |
+
+O Gemini somou 6 — passaria num gate que só olhasse o total — mas o juiz zerou o critério de
+honestidade porque a análise afirma como fato uma causa sem suporte nos artefatos ("o reindex
+se estendeu devido ao crescimento do volume de dados históricos", inventado) e rotula um
+achado como `[ESTABELECIDO]` quando os dados só sustentam inferência. **É exatamente o caso
+que a regra "nenhum critério zerado" existe para pegar** — um corte só de soma teria aprovado.
+
+### Curadoria — bug encontrado e corrigido antes do resultado acima ser confiável
+
+A primeira rodada do gate deu um falso erro ("Could not extract JSON from llm-rubric
+response") no Gemini e uma reprovação enganosa no Haiku — não por causa do juiz, mas porque o
+`max_tokens`/`maxOutputTokens` **padrão** dos dois providers geradores cortava a saída de
+causa-raiz no meio de uma tabela: é um prompt de 9 seções, bem mais longo que os três testados
+no CP08, e o teto default (~1024–4096 conforme o provider) não é suficiente. Corrigido subindo
+explicitamente `max_tokens: 8192` (Anthropic) e `generationConfig.maxOutputTokens: 8192`
+(Google) nos dois geradores, e `max_tokens: 4096` no provider do juiz (que também truncava o
+JSON de veredito ao avaliar a saída mais longa do Gemini). Depois do ajuste, as duas gerações
+terminaram naturalmente antes do teto — o resultado acima é de saídas completas, não cortadas.
+
 ## Limitações conhecidas
 
 - Só conclui com o que está nos artefatos: se o gatilho estiver fora da janela coberta,
