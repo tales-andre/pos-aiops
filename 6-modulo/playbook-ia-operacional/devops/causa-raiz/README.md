@@ -189,6 +189,12 @@ se estendeu devido ao crescimento do volume de dados históricos", inventado) e 
 achado como `[ESTABELECIDO]` quando os dados só sustentam inferência. **É exatamente o caso
 que a regra "nenhum critério zerado" existe para pegar** — um corte só de soma teria aprovado.
 
+**Revisão pós-lançamento (CP10):** a linha do Google acima é histórica — o achado que ela
+registra (fabricação de causa) continua válido como demonstração do valor da regra composta,
+mas a suíte de CI atual roda só com **Anthropic Haiku 4.5**: o free-tier do Google AI Studio
+(20 req/dia) derrubou o pipeline por infraestrutura em execuções reais do GitHub Actions, sem
+relação com qualidade de prompt. Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+
 ### Curadoria — bug encontrado e corrigido antes do resultado acima ser confiável
 
 A primeira rodada do gate deu um falso erro ("Could not extract JSON from llm-rubric

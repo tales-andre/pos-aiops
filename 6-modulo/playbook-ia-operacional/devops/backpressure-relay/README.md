@@ -111,6 +111,11 @@ falsificador presente na primeira execução real. No pipeline do CP10, este tes
 `repeat: 3` / `repeat-min-pass: 2` (não 1 execução só), pela mesma razão do CP09: um juiz LLM
 pode flutuar, e uma reprovação isolada não deveria derrubar o PR sozinha.
 
+**Revisão pós-lançamento:** a linha do Google acima é histórica. A suíte de CI passou a rodar só
+com **Anthropic Haiku 4.5** — o free-tier do Google AI Studio (20 req/dia) derrubou o pipeline
+por infraestrutura em execuções reais do GitHub Actions. Reverificado só com Haiku: **PASS**.
+Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+
 ## Limitações conhecidas
 
 - A qualidade da matriz depende de o cenário trazer números; sem eles, o prompt produz

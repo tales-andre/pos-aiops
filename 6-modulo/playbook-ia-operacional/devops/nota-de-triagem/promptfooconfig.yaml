@@ -4,14 +4,11 @@ prompts:
   - file://prompt.md
 
 providers:
+  # Só Anthropic (CP10, revisão pós-lançamento): o Google AI Studio free-tier tem cota de
+  # só 20 req/dia por modelo, e derrubou o pipeline por infraestrutura (não por qualidade
+  # de prompt) mais de uma vez. Ver CP10-pipeline.md, "Por que só Anthropic na suíte de CI".
   - id: anthropic:messages:claude-haiku-4-5-20251001
     label: anthropic-haiku-4.5
-  - id: google:gemini-3.5-flash
-    label: google-gemini-3.5-flash
-    config:
-      generationConfig:
-        thinkingConfig:
-          thinkingBudget: 0
 
 defaultTest:
   assert:

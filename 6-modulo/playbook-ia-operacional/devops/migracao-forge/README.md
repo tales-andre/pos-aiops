@@ -144,6 +144,13 @@ diagnóstico"), e o juiz pegou a violação com exemplos citados linha a linha. 
 tipo de regressão sutil — o texto está bem escrito e parece útil, só que descumpre o contrato do
 elo — que um assert de `contains`/`regex` não pegaria, e que o gate do CP10 existe para barrar.
 
+**Revisão pós-lançamento:** o Google saiu da suíte de CI (free-tier de 20 req/dia derrubou o
+pipeline por infraestrutura, não por qualidade — detalhe em
+[`CP10-pipeline.md`](../../CP10-pipeline.md)). Reexecutado só com Haiku 4.5 depois da mudança: **o
+mesmo achado se repete** — score 5/8, critério 2 (escopo) zerado, com o juiz citando os mesmos
+trechos problemáticos da seção de pré-requisitos. Confirma que é uma característica real e
+reproduzível do comportamento do Haiku 4.5 neste prompt, não uma amostra isolada.
+
 ## Limitações conhecidas
 
 - A qualidade de cada elo depende do anterior: um diagnóstico pobre propaga lacunas

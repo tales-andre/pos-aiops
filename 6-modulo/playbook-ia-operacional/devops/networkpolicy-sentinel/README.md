@@ -256,7 +256,11 @@ tocam segurança", uma exceção explícita, não uma correção do prompt.
 O teto de 5s (CP08) foi subido para **20s** no pipeline do CP10, pela mesma razão do
 `triagem-de-pods`: o CoT de segurança embutido no prompt consome tempo de geração real (5,2–16,4s
 observados), e um teto inatingível reprova todo PR permanentemente, não só regressões de verdade.
-Reverificado nos dois providers: **2/2 PASS**. Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+Reverificado nos dois providers (na época): **2/2 PASS**.
+
+**Revisão pós-lançamento:** a suíte de CI passou a rodar só com Anthropic Haiku 4.5 — o
+free-tier do Google AI Studio (20 req/dia) derrubou o pipeline por infraestrutura em execuções
+reais do GitHub Actions. Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
 
 ## Limitações conhecidas
 

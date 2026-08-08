@@ -148,6 +148,11 @@ tarefa não precisa. Depois do ajuste, os três casos do Gemini caíram para ~1,
 Esse é exatamente o tipo de trade-off latência/custo × modelo que o checkpoint pede para
 registrar: para uma tarefa de formato fixo, thinking ligado é custo puro, sem retorno.
 
+**Atualização CP10:** a linha do Google acima é histórica. A suíte de CI (`promptfooconfig.yaml`
+atual) passou a rodar só com **Anthropic Haiku 4.5** — o free-tier do Google AI Studio (20
+req/dia) derrubou o pipeline por infraestrutura mais de uma vez. Justificativa completa e
+alternativas comparadas em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+
 ## Limitações conhecidas
 
 - A qualidade da nota depende do alerta cru: se ele não trouxer sinal causal, a HIPÓTESE

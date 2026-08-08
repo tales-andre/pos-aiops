@@ -73,6 +73,60 @@ usavam) — o assert `contains: "ESCALAR PARA:"` do `promptfooconfig.yaml` (CP08
 Depois de capturar a falha no Actions (links acima), o PR foi fechado sem merge, sem alterar
 `master`.
 
+## Revisão pós-lançamento: por que só Anthropic na suíte de CI
+
+A evidência acima (3 jobs derrubados só por `RateLimitExhaustedError` do Google, em duas
+execuções reais) não ficou como nota de rodapé — mudou o desenho. Depois de capturar essa
+evidência, os 6 `promptfooconfig.yaml` e o workflow foram atualizados para rodar **só
+`anthropic:messages:claude-haiku-4-5-20251001`**. O Google saiu da suíte de CI inteira; o
+workflow não passa mais `GOOGLE_API_KEY`.
+
+**Isso é uma reversão explícita do pedido original do CP08** ("adicione um segundo provider de
+outro fornecedor" no `promptfooconfig.yaml`). Registrado aqui sem disfarce, com a justificativa:
+
+- **A regra de ≥2 provedores do desafio inteiro já está satisfeita fora da suíte de CI.** Ela
+  foi estabelecida lá no início do capstone sobre a *criação/execução* de cada prompt do
+  playbook — e todo prompt do CP01 ao CP06 já tem execução real registrada em pelo menos dois
+  fornecedores (Anthropic e Google, ver `README.md` de cada prompt). O que muda agora é só qual
+  provider o **gate de CI** usa pra gerar a saída que vai ser testada a cada PR — uma decisão de
+  engenharia de pipeline, não uma reinterpretação da regra do desafio.
+- **O que se perde:** o CP09 mostrou um caso real em que só o Gemini (não o Haiku) fabricou uma
+  causa sem suporte — com um provider só na suíte, esse tipo de regressão *específica de um
+  fornecedor* deixa de ter chance de aparecer no CI. É uma perda real de cobertura, não
+  cosmética.
+- **O que se mantém:** o gate continua rodando geração real + juiz real a cada PR, e continua
+  pegando regressão de conteúdo de verdade — confirmado depois da mudança: `migracao-forge`
+  reprova de novo, com o Haiku sozinho, pelo mesmo motivo de antes (escopo do Elo 1 violado,
+  critério zerado, reason do juiz idêntico em conteúdo). A suíte não virou um carimbo de
+  aprovação automática só porque perdeu um provider.
+
+**Alternativas comparadas antes de cortar o Google:**
+
+1. **Manter os dois e tolerar a instabilidade** (deixar o job de rate limit falhar de vez em
+   quando, contando com reruns manuais). **Rejeitada:** falha de infraestrutura indistinguível de
+   regressão real na tela do PR treina o time a ignorar builds vermelhos — o pior resultado
+   possível pra um gate, pior que ter só 1 provider confiável.
+2. **Segunda chave do Google** (outro projeto/conta, para dobrar a cota de 20 para 40 req/dia,
+   alternando entre as duas). **Rejeitada por decisão do Tales:** resolve por mais tempo, não
+   resolve de vez — a suíte cresce, o número de PRs cresce, e o teto dobrado volta a ser
+   insuficiente mais cedo ou mais tarde; também significa gerenciar mais uma credencial só para
+   adiar o mesmo problema.
+3. **Um segundo modelo Anthropic** (cogitado: `claude-fable-5`) **em vez de um segundo
+   fornecedor**, mantendo 2 providers na suíte. **Rejeitada:** testado via API antes de adotar —
+   `claude-fable-5` não aceita `thinking.type.disabled` (erro: *"Thinking defaults to adaptive
+   mode when not specified"*), então ele reproduziria exatamente o problema de latência/custo
+   que o Gemini tinha antes de eu desligar o thinking dele no CP08 — só que trocando o fornecedor
+   instável (Google, por cota) pelo modelo caro (Fable 5, por thinking obrigatório). Não é uma
+   melhora, é o mesmo tipo de problema com fornecedor diferente.
+4. **Só Anthropic Haiku 4.5** (escolhida). Único modelo, nesta conta, comprovadamente rápido,
+   barato e sem thinking obrigatório — os três atributos que a suíte de CI precisa pra rodar em
+   todo PR sem virar gargalo de cota nem de custo. Formalizado com o Tales antes de aplicar, pela
+   troca explícita de cobertura cross-provider por confiabilidade de pipeline.
+
+`GOOGLE_API_KEY` continua cadastrada como secret do repositório (não removida — pode voltar a
+ser útil se o Google entrar de novo em algum uso pontual, ex.: `workflow_dispatch` manual contra
+um tier pago), só não é mais lida pelo workflow padrão.
+
 ## A estratégia de gate
 
 ### O que falha o build, e por quê
@@ -105,8 +159,7 @@ em execuções distintas). Duas formas de lidar com isso, e a que ficou:
   não derruba o PR sozinha; uma reprovação consistente (2 de 3 ou 3 de 3) é tratada como
   regressão real, porque é exatamente esse o padrão que separa "o juiz teve uma leitura
   excêntrica" de "a saída de fato piorou". Custo: 3x as chamadas de juiz nesses três prompts —
-  aceito, porque o juiz já é a parte mais barata da suíte (uma chamada de avaliação contra duas
-  de geração) e é exatamente onde a robustez importa mais.
+  aceito porque é exatamente onde a robustez importa mais.
 
 ### Suíte inteira a cada mudança × só os prompts alterados
 
@@ -115,11 +168,11 @@ O workflow define os 6 jobs da matriz sempre, mas cada `promptfoo-action` recebe
 prompt de fato precisa chamar algum modelo. Três alternativas comparadas:
 
 1. **Rodar a suíte inteira sempre**, sem nenhuma filtragem. **Rejeitada como padrão:** um PR que
-   só corrige um typo no `README.md` de uma categoria dispararia 6 configs × 2 providers (+ 3×
-   `repeat` em metade deles) — o dobro do custo/tempo necessário, todo PR, para sempre. O
-   argumento a favor (pega drift silencioso: um provider muda o comportamento de um modelo sem
-   o playbook mudar) é real, mas é um risco de baixa frequência que não justifica pagar o custo
-   máximo em 100% dos PRs — ver mitigação abaixo.
+   só corrige um typo no `README.md` de uma categoria dispararia os 6 configs (+ 3× `repeat` em
+   metade deles) — custo/tempo desnecessário, todo PR, para sempre. O argumento a favor (pega
+   drift silencioso: o provider muda o comportamento de um modelo sem o playbook mudar) é real,
+   mas é um risco de baixa frequência que não justifica pagar o custo máximo em 100% dos PRs —
+   ver mitigação abaixo.
 2. **Matriz dinâmica gerada por script** (um job inicial roda `git diff` e monta a lista de
    prompts afetados; os jobs seguintes só existem para essa lista). **Rejeitada:** economiza uns
    poucos segundos de alocação de runner sobre a opção 3 (o job nem chega a subir), às custas de
@@ -138,10 +191,13 @@ substituto de um cron de verdade, é o gancho manual que falta hoje; ver "O que 
 
 ### Onde ficam as chaves dos provedores
 
-Duas chaves — `ANTHROPIC_API_KEY` e `GOOGLE_API_KEY` — precisam existir como **repository
-secrets** (Settings → Secrets and variables → Actions) no `tales-andre/pos-aiops`, configuradas
-por fora deste repositório (nunca commitadas — o mesmo princípio já seguido localmente com
-`.env`/`.gitignore` desde o CP08). Alternativas comparadas:
+`ANTHROPIC_API_KEY` precisa existir como **repository secret** (Settings → Secrets and variables
+→ Actions) no `tales-andre/pos-aiops`, configurada por fora deste repositório (nunca commitada —
+o mesmo princípio já seguido localmente com `.env`/`.gitignore` desde o CP08).
+`GOOGLE_API_KEY` também está cadastrada lá, mas — depois da revisão pós-lançamento acima — o
+workflow não a lê mais; ficou como secret ocioso, não removido por precaução (ver seção
+anterior). Alternativas comparadas para o mecanismo de guardar a chave (independem de qual/quantos
+provedores a suíte usa):
 
 - **Repository secrets do GitHub Actions (escolhida).** Nativo, sem infraestrutura extra,
   suficiente pro raio de exposição deste caso: chamadas de leitura/avaliação, sem escrita em

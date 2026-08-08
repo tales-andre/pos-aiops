@@ -134,8 +134,12 @@ sistematicamente é o teto de 5s/US$0,01 contra o formato de saída deste prompt
 Os tetos de 5s/US$0,01 acima (fixados no CP08) foram levados para o pipeline do CP10 e
 **subidos para 20s/US$0,02** — a recomendação já registrada na seção anterior foi executada, não
 só anotada. Reverificado com `claude-haiku-4-5-20251001`: **3/3 PASS** nos três casos (7–8s de
-latência real, bem dentro do novo teto). Detalhe da decisão e a comparação de alternativas em
-[`CP10-pipeline.md`](../../CP10-pipeline.md).
+latência real, bem dentro do novo teto).
+
+**Revisão pós-lançamento:** a suíte de CI passou a rodar só com Anthropic Haiku 4.5 — o
+free-tier do Google AI Studio (20 req/dia) derrubou o pipeline por infraestrutura em execuções
+reais do GitHub Actions, sem relação com a qualidade do prompt. Detalhe da decisão e a
+comparação de alternativas em [`CP10-pipeline.md`](../../CP10-pipeline.md).
 
 ## Limitações conhecidas
 

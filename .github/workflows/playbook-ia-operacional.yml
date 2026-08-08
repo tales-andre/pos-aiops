@@ -54,10 +54,6 @@ jobs:
 
       - name: "Rodar suíte — ${{ matrix.prompt }}"
         uses: promptfoo/promptfoo-action@v1
-        env:
-          # A action não tem input dedicado pra Google/Gemini — passa como env var,
-          # que o promptfoo lê diretamente (ver justificativa, "Onde ficam as chaves").
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
