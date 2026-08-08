@@ -70,6 +70,7 @@ jobs:
           # `prompts:` aqui serve só para decidir se o job roda ou pula — quem prompt.md
           # roda vem do config, ponto.
           use-config-prompts: "true"
+          force-run: "true" # TEMP: valida o fix do use-config-prompts com execução real
           cache-path: .promptfoo-cache
           max-concurrency: 4
           # 100%: todo assert (determinístico ou juiz) barra o merge se falhar — ver
