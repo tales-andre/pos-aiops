@@ -97,6 +97,17 @@ Prompts gerados com **Claude Opus 5** (via claude.ai) a partir do gerador de pro
 framework (`gerador-prompts-frameworks.md`); a execução e as duas rodadas de verificação
 também rodaram no Opus 5. O meta-prompt em si não é entregável.
 
+**Escolha de modelo (custo · latência · qualidade · privacidade):** hardening de
+segurança é o tipo de artefato onde um erro sutil (o `namespaceSelector` ausente da v1)
+tem custo de produção alto — Opus 5 foi escolhido pela mesma razão do CP03, qualidade de
+raciocínio acima de custo/latência, reforçada pelo próprio achado do CP08: mesmo com
+menos raciocínio (Haiku/Gemini), o teste determinístico ainda passou no conteúdo, mas a
+latência maior (5–16s) mostrou que gerar esse tipo de manifesto com segurança exige mais
+processamento, não é hipótese. Privacidade: o único prompt do playbook cujo dado de
+entrada é puramente infraestrutural (namespace, label, porta) — sem nome de tenant,
+pessoa ou hostname real —, o que faz dele o de menor sensibilidade de dado no repo; não
+precisou de nota de sanitização dedicada por isso.
+
 ## Curadoria
 
 ### Justificativa do framework

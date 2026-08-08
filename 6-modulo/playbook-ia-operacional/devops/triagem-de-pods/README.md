@@ -82,9 +82,23 @@ Rodado contra os três snapshots de exemplo do desafio, com **Gemini 3.5 Flash**
 - **Formato de saída fixo** (RESUMO, PODS PROBLEMÁTICOS por severidade, SEM
   ACHADOS, PONTOS CEGOS, 60 SEGUNDOS) deixa a saída legível e testável — base para
   os asserts determinísticos do Checkpoint 08.
-- **Escolha de modelo:** Gemini 3.5 Flash equilibra qualidade de raciocínio e
-  custo. Alternativa mais barata (Flash Lite) fica anotada para o CP08, onde o
-  teto de custo por chamada pesa na decisão.
+- **Escolha de modelo (custo · latência · qualidade · privacidade):** Gemini 3.5 Flash
+  equilibra qualidade de raciocínio e custo para uma tarefa de diagnóstico que roda a
+  cada snapshot colado manualmente — latência de alguns segundos é aceitável, não é um
+  caminho de alerta em tempo real. Alternativa mais barata (Flash Lite) fica anotada
+  para o CP08, onde o teto de custo por chamada pesa mais. Privacidade: o snapshot pode
+  trazer nomes de pod/namespace internos — sem PII de cliente final, mas ainda assim
+  dado de infraestrutura interna saindo pra fora do perímetro. Nenhum dos dois
+  provedores usados aqui tem acordo de tratamento de dados para este exercício, então a
+  escolha entre eles não muda o vetor de exposição; a mitigação real é sanitizar
+  identificadores antes do envio (mesmo princípio da nota de sanitização da causa-raiz),
+  não a marca do provider.
+
+## Criação via meta-prompting
+
+Prompt gerado e refinado com **Gemini 3.5 Flash** (via Google AI Studio) a partir dos
+requisitos; a execução acima também rodou no Gemini 3.5 Flash. O meta-prompt em si não
+é entregável.
 
 ## Testes determinísticos (CP08)
 

@@ -106,6 +106,16 @@ e os placeholders de limiar que a estratégia atribuiu à Fase 0.
   Sonnet 5**; a execução dos três elos também rodou no Sonnet 5 (claude.ai).
   Combinado com o Gemini dos CP01/02/04 e o Opus 5 do CP03, o playbook cobre dois
   provedores distintos (Anthropic e Google) ao longo do desafio.
+- **Escolha de modelo (custo · latência · qualidade · privacidade):** planejamento de
+  migração é raciocínio em múltiplos passos encadeados, não uma tarefa de alta
+  frequência — Sonnet 5 fica no meio do espectro custo/qualidade da Anthropic, mais
+  barato que Opus 5 (usado no CP03 por exigir mais rigor de diagnóstico single-shot) e
+  mais capaz que Haiku pra manter coerência entre três chamadas encadeadas. Latência de
+  vários segundos por elo é aceitável porque é planejamento, não resposta a incidente
+  ativo. Privacidade: o cenário cita nome de pessoa (Pepper, dona dos relatórios de
+  billing) e estrutura interna do pipeline — dado de arquitetura interna, não PII de
+  cliente final; a exposição não muda entre Anthropic e Google, a mitigação seria
+  sanitizar o nome antes do envio.
 
 ## Gate de qualidade — LLM-as-judge (CP10)
 

@@ -84,9 +84,25 @@ perda de telemetria), com **Gemini 3.6 Flash** (`gemini-3.6-flash`). Resultado r
   cenário (Sentinel=contratual, não-perda=estrutural, orçamento=financeira).
 - **Recomendação em camadas por reversibilidade** e o **falsificador** final entregam
   não só o quê, mas o que observar para saber que a decisão errou.
-- **Execução no Gemini 3.6 Flash** (diferente do 3.5 usado nos CP01/02) para variar o
-  modelo dentro do provedor Google; a tarefa é de raciocínio pesado (~49s) e o modelo
-  respeitou a estrutura e as regras invioláveis sem encurtar a análise.
+- **Execução no Gemini 3.6 Flash (custo · latência · qualidade · privacidade):**
+  diferente do 3.5 usado nos CP01/02, para variar o modelo dentro do provedor Google.
+  A tarefa é de raciocínio pesado (~49s de latência) e de baixa frequência — não roda a
+  cada evento, roda quando alguém decide investigar uma sobrecarga — então trocar
+  latência por qualidade de raciocínio (matriz completa, 10 passos, sem atalho) compensa
+  aqui, diferente de um prompt de alerta em tempo real. Custo por chamada é mais alto que
+  o Flash mais barato, aceitável pela baixa frequência de uso. Privacidade: o cenário
+  cita nome de pessoa (Steve Rogers) e número de orçamento interno — dado de decisão de
+  arquitetura, não PII de cliente; ainda assim é informação que sai do perímetro da
+  Aegis. Como nos demais prompts, a escolha entre Anthropic e Google aqui não muda o
+  raio de exposição (nenhum dos dois tem acordo de dados dedicado neste exercício); a
+  mitigação seria sanitizar nome/valor de orçamento antes do envio, não trocar de
+  provider.
+
+## Criação via meta-prompting
+
+Prompt gerado e refinado com **Gemini 3.6 Flash** (via Google AI Studio) a partir dos
+requisitos; a execução acima também rodou no Gemini 3.6 Flash. O meta-prompt em si não
+é entregável.
 
 ## Gate de qualidade — LLM-as-judge (CP10)
 

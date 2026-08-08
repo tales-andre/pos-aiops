@@ -73,6 +73,17 @@ a execução acima também rodou no Opus 5. Combinado com o Gemini usado nos CP0
 fecha a exigência de dois provedores distintos ao longo do desafio. O meta-prompt em si
 não é entregável.
 
+**Escolha de modelo (custo · latência · qualidade · privacidade):** causa-raiz é
+diagnóstico sob incidente ativo, não um caminho de alta frequência — aqui qualidade de
+raciocínio pesa mais que custo ou latência, o oposto do `nota-de-triagem`. Opus 5 foi
+escolhido por isso: é o modelo mais caro e mais lento do playbook, mas é exatamente onde
+o CP09 depois mostrou que um modelo mais barato (Gemini 3.5 Flash) fabricou uma causa sem
+suporte — a escolha de qualidade acima de custo se pagou. Privacidade: é o prompt do
+playbook com a maior densidade de dado potencialmente sensível (hostname de nó, nome de
+índice, timestamps que revelam janela de manutenção) — por isso é o único checkpoint que
+exige uma nota de sanitização explícita (abaixo). A escolha entre Anthropic e Google não
+muda o raio de exposição; o que muda é a pseudonimização antes do envio.
+
 ## Sanitização (pré-envio a modelo externo)
 
 Os artefatos vão para um modelo fora do perímetro. A decisão de tratamento aqui é o inverso de um filtro de DLP genérico: o valor diagnóstico depende de correlacionar a **mesma entidade** entre os três artefatos, então a operação correta é **pseudonimização consistente com mapa mantido localmente**, não redação cega. Redigir sem preservar identidade quebra o Passo 3 do prompt e produz uma análise inútil.

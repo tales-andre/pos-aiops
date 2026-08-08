@@ -85,6 +85,16 @@ e consistência, não por raciocínio de diagnóstico (por isso não é RISE com
 **execução** nos três alertas rodou no **Gemini 3.5 Flash**. Dois provedores distintos
 (Anthropic na criação, Google na execução). O meta-prompt em si não é entregável.
 
+**Escolha do modelo de execução (custo · latência · qualidade · privacidade):** este é o
+prompt que roda a cada alerta disparado — o de maior frequência do playbook — então
+latência baixa (segundos) e custo por chamada pesam mais aqui do que num prompt de
+investigação sob demanda; Gemini 3.5 Flash cobre isso sem perder qualidade na tarefa
+(formato fixo, não raciocínio aberto). Privacidade: o alerta cru carrega nome de tenant
+e, às vezes, timestamp de deploy — dado interno da Aegis, não PII de usuário final, mas
+ainda assim identifica cliente. Nenhum dos provedores usados tem acordo de tratamento de
+dados dedicado neste exercício; a mitigação real seria pseudonimizar o nome do tenant
+antes do envio, não escolher entre Anthropic e Google.
+
 **A armadilha do checkpoint** é misturar as duas listas (exemplares de formato × alertas
 de entrada). O prompt marca os exemplares como *output-only*, com instrução explícita de
 não inferir o formato de entrada a partir deles nem reaproveitar seu conteúdo — validado
