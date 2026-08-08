@@ -65,6 +65,11 @@ jobs:
           prompts: |
             **/*.md
             **/*.js
+          # Sem isso, a action SUBSTITUI os prompts do promptfooconfig.yaml pelos arquivos
+          # que casaram com o glob acima (ex.: rodaria o README.md como se fosse o prompt).
+          # `prompts:` aqui serve só para decidir se o job roda ou pula — quem prompt.md
+          # roda vem do config, ponto.
+          use-config-prompts: "true"
           cache-path: .promptfoo-cache
           max-concurrency: 4
           # 100%: todo assert (determinístico ou juiz) barra o merge se falhar — ver
