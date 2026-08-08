@@ -127,6 +127,33 @@ outro fornecedor" no `promptfooconfig.yaml`). Registrado aqui sem disfarce, com 
 ser útil se o Google entrar de novo em algum uso pontual, ex.: `workflow_dispatch` manual contra
 um tier pago), só não é mais lida pelo workflow padrão.
 
+### Um segundo bug real, achado ao validar a troca de provider
+
+Tirar o Google não bastou para o pipeline ficar verde — a primeira execução depois da troca
+([run #31256784599](https://github.com/tales-andre/pos-aiops/actions/runs/31256784599))
+reprovou os **6 jobs com 0% de sucesso**, incluindo os deterministicos mais simples. A causa não
+tinha nada a ver com provider: o commit que trocou o Google pelo Anthropic também editou o
+`README.md` dos 6 prompts (para registrar essa própria mudança) sem tocar em `prompt.md`. O
+input `prompts:` do workflow (que eu tinha configurado só para decidir se um job deveria pular
+por change-detection) tem um efeito colateral não óbvio: por padrão a action **substitui** os
+prompts do `promptfooconfig.yaml` pelos arquivos que casaram com esse glob no diff — nesse caso,
+o `README.md` alterado, não o `prompt.md` do config. O modelo recebeu a documentação humana como
+se fosse instrução e respondeu analisando o README ("# Análise do Documento: Nota de Triagem...")
+em vez de executar o prompt de verdade.
+
+**Fix:** `use-config-prompts: "true"` no step da action — `prompts:` continua controlando o
+change-detection, mas o conteúdo executado volta a vir sempre do `promptfooconfig.yaml`. Revalidado
+com uma execução forçada
+([run #31257031844](https://github.com/tales-andre/pos-aiops/actions/runs/31257031844),
+`force-run: true` temporário só para esse teste, removido depois): 4 jobs passaram limpo
+(`nota-de-triagem`, `triagem-de-pods`, `networkpolicy-sentinel`, `causa-raiz`);
+`migracao-forge` reprovou pelo motivo certo (mesmo achado de escopo, reproduzido de novo);
+`backpressure-relay` reprovou por variância real do juiz — 1 de 3 repeats passou, abaixo do
+`repeat-min-pass: 2` — exatamente o tipo de flutuação não-determinística que esse mecanismo
+existe para capturar (não uma reprovação "errada": das 3 gerações independentes do Haiku, uma
+saiu mais fraca e o juiz pegou). Fica registrado como exemplo real de sinal esperado, não como
+pendência a esconder.
+
 ## A estratégia de gate
 
 ### O que falha o build, e por quê

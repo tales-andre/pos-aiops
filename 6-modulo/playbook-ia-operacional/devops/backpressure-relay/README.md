@@ -113,8 +113,14 @@ pode flutuar, e uma reprovação isolada não deveria derrubar o PR sozinha.
 
 **Revisão pós-lançamento:** a linha do Google acima é histórica. A suíte de CI passou a rodar só
 com **Anthropic Haiku 4.5** — o free-tier do Google AI Studio (20 req/dia) derrubou o pipeline
-por infraestrutura em execuções reais do GitHub Actions. Reverificado só com Haiku: **PASS**.
-Detalhe em [`CP10-pipeline.md`](../../CP10-pipeline.md).
+por infraestrutura em execuções reais do GitHub Actions.
+
+Numa execução real do pipeline (`repeat: 3`), esse teste variou: **1 de 3 repeats passou**,
+abaixo do `repeat-min-pass: 2` — reprovação por flutuação real do juiz, não por bug. É o
+comportamento esperado do mecanismo: das 3 gerações independentes do Haiku para o mesmo
+cenário, uma saiu mais fraca e o juiz pegou; uma reprovação isolada não teria derrubado o PR
+sozinha (precisaria de 2 de 3), mas nesse caso 2 de 3 falharam mesmo. Detalhe completo em
+[`CP10-pipeline.md`](../../CP10-pipeline.md).
 
 ## Limitações conhecidas
 
