@@ -1,0 +1,61 @@
+# Infraestrutura de apoio para o encontros-tech no laboratório.
+#
+# Os manifests da aplicação vêm do Ticket 01 — foram gerados pela skill
+# padrao-manifests-metacortex e são aplicados sem edição, exceto pela imagem
+# (ver README deste diretório).
+#
+# O que está aqui é o que aquele pacote deliberadamente deixou de fora:
+# o Namespace (criado pelo Construct, segundo a regra 1.2 do padrão), o Secret
+# (regra 3.3: segredo não é versionado junto do manifesto) e o banco, que é
+# infraestrutura e colide com a regra 3.2.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: helio-prod
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: encontros-tech-db
+  namespace: helio-prod
+type: Opaque
+stringData:
+  url: "postgresql://encontros_tech:Pg-lab-1234@helio-postgres:5432/encontros_tech"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helio-postgres
+  namespace: helio-prod
+  labels:
+    app: helio-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: helio-postgres}
+  template:
+    metadata:
+      labels: {app: helio-postgres}
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          env:
+            - {name: POSTGRES_DB,       value: encontros_tech}
+            - {name: POSTGRES_USER,     value: encontros_tech}
+            - {name: POSTGRES_PASSWORD, value: "Pg-lab-1234"}
+          ports:
+            - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helio-postgres
+  namespace: helio-prod
+  labels:
+    app: helio-postgres
+spec:
+  selector: {app: helio-postgres}
+  ports:
+    - {port: 5432, targetPort: 5432}

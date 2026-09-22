@@ -1,0 +1,85 @@
+# encontros-tech — criação do schema, cliente helio, ambiente prod
+#
+# Por que este Job existe:
+# src/main.py roda `event_model.Base.metadata.create_all(bind=engine)` no import do
+# módulo, antes de criar o app Flask. Sob `gunicorn -w 4` cada worker importa main,
+# e com replicas: 2 e maxUnavailable: 0 o rollout chega a 3 pods — até 12 execuções
+# concorrentes de create_all no mesmo banco. create_all consulta o catálogo e só então
+# emite CREATE TABLE: duas execuções que consultam juntas emitem juntas, e uma leva
+# DuplicateTable. Este Job cria o schema uma vez, antes, para que o create_all dos
+# pods encontre a tabela pronta e vire no-op.
+#
+# Diferença em relação à decisão conhecida "A migração de banco roda no start da
+# aplicação": lá bastava sobrescrever command/args para o container ignorar o
+# entrypoint. Aqui NÃO basta — a criação está no corpo de main.py, e qualquer comando
+# que suba `main:app` a executa. Este Job reduz a janela de corrida, não a elimina.
+# A correção de verdade é tirar o create_all de main.py. Ver README.md, decisão 3.
+#
+# APLICAR ANTES de encontros-tech-app.yaml. Essa ordem não está expressa em nenhum
+# dos dois arquivos: quem aplicar fora de ordem reabre a corrida.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: encontros-tech-schema
+  namespace: helio-prod
+  labels:
+    app.kubernetes.io/name: encontros-tech-schema
+    app.kubernetes.io/instance: helio-prod
+    app.kubernetes.io/part-of: encontros-tech
+    app.kubernetes.io/managed-by: platform
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: encontros-tech-schema
+        app.kubernetes.io/instance: helio-prod
+        app.kubernetes.io/part-of: encontros-tech
+        app.kubernetes.io/managed-by: platform
+    spec:
+      restartPolicy: Never
+      serviceAccountName: encontros-tech-web
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: schema
+          image: fabricioveronez/encontros-tech:v26
+          # Importa models.event direto, sem passar por main.py: assim o Job não sobe
+          # Flask nem o exporter de métricas, só fala com o banco. O WORKDIR da imagem
+          # é /app, que é a raiz do pacote (core/, models/), então o import resolve.
+          command: ["python", "-c"]
+          args:
+            - "from core.database import engine; from models.event import Base; Base.metadata.create_all(bind=engine); print('schema aplicado')"
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: encontros-tech-db
+                  key: url
+            - name: PYTHONDONTWRITEBYTECODE
+              value: "1"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits:   {cpu: 200m, memory: 256Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 16Mi
