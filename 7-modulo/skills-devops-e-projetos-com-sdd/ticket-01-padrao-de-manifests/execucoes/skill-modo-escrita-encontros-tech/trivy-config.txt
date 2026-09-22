@@ -1,0 +1,71 @@
+2026-09-20T14:48:43-03:00	INFO	[misconfig] Misconfiguration scanning is enabled
+2026-09-20T14:48:43-03:00	INFO	[checks-client] Using existing checks from cache	path="/home/tales/.cache/trivy/policy/content"
+2026-09-20T14:48:44-03:00	INFO	Detected config files	num=2
+
+Report Summary
+
+┌────────────────────────────┬────────────┬───────────────────┐
+│           Target           │    Type    │ Misconfigurations │
+├────────────────────────────┼────────────┼───────────────────┤
+│ encontros-tech-app.yaml    │ kubernetes │         1         │
+├────────────────────────────┼────────────┼───────────────────┤
+│ encontros-tech-schema.yaml │ kubernetes │         1         │
+└────────────────────────────┴────────────┴───────────────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+encontros-tech-app.yaml (kubernetes)
+====================================
+Tests: 100 (SUCCESSES: 99, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+KSV-0125 (MEDIUM): Container web in deployment encontros-tech-web (namespace: helio-prod) uses an image from an untrusted registry.
+════════════════════════════════════════
+Ensure that all containers use images only from trusted registry domains.
+
+See https://avd.aquasec.com/misconfig/ksv-0125
+────────────────────────────────────────
+ encontros-tech-app.yaml:80-168
+────────────────────────────────────────
+  80 ┌         # páginas HTML (page_router) e a API JSON em /api/events (api_router), num
+  81 │         # único Flask — por isso `web`, e não `api`.
+  82 │         - name: web
+  83 │           # Regra 3.7: registry interno. A imagem que existe hoje é pública
+  84 │           # (fabricioveronez/encontros-tech-labs:v1, do docker-compose.yml removido
+  85 │           # no commit 0f5bbad) e precisa entrar pelo Loom. A tag `v1` é a única
+  86 │           # referência de versão que o projeto tem; ela é mutável, então o certo é
+  87 │           # trocar por digest depois do espelhamento — o digest não é inventável aqui.
+  88 └           image: registry.metacortex.io/encontros-tech/web:v1
+  ..   
+────────────────────────────────────────
+
+
+
+encontros-tech-schema.yaml (kubernetes)
+=======================================
+Tests: 99 (SUCCESSES: 98, FAILURES: 1)
+Failures: 1 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 0, CRITICAL: 0)
+
+KSV-0125 (MEDIUM): Container schema in job encontros-tech-schema (namespace: helio-prod) uses an image from an untrusted registry.
+════════════════════════════════════════
+Ensure that all containers use images only from trusted registry domains.
+
+See https://avd.aquasec.com/misconfig/ksv-0125
+────────────────────────────────────────
+ encontros-tech-schema.yaml:52-80
+────────────────────────────────────────
+  52 ┌       containers:
+  53 │         - name: schema
+  54 │           image: registry.metacortex.io/encontros-tech/web:v1
+  55 │           # Importa models.event direto, sem passar por main.py: assim o Job não sobe
+  56 │           # Flask nem o exporter de métricas, só fala com o banco. O WORKDIR da imagem
+  57 │           # é /app, que é a raiz do pacote (core/, models/), então o import resolve.
+  58 │           command: ["python", "-c"]
+  59 │           args:
+  60 └             - "from core.database import engine; from models.event import Base; Base.metadata.create_all(bind=engine); print('schema aplicado')"
+  ..   
+────────────────────────────────────────
+
+

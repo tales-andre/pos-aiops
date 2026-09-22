@@ -1,0 +1,46 @@
+BARRA
+
+  [1.1 kebab-case] (obrigatório) Deployment/NyxAPI
+    esperado:  minúsculas com hífen
+    encontrado: NyxAPI
+
+  [1.3 quatro rótulos] (obrigatório) Deployment/NyxAPI
+    esperado:  os quatro app.kubernetes.io
+    encontrado: faltam app.kubernetes.io/name, app.kubernetes.io/instance, app.kubernetes.io/part-of, app.kubernetes.io/managed-by
+
+  [2.2 readiness e liveness] (obrigatório) Deployment/NyxAPI/api
+    esperado:  as duas declaradas
+    encontrado: faltam readinessProbe, livenessProbe
+
+  [2.3 replicas >= 2 em prod] (obrigatório) Deployment/NyxAPI
+    esperado:  >= 2
+    encontrado: 1
+
+  [2.4 estratégia de atualização] (obrigatório em prod) Deployment/NyxAPI
+    esperado:  RollingUpdate, maxUnavailable 0, maxSurge 1
+    encontrado: ausente
+
+  [3.4 automountServiceAccountToken] (obrigatório) Deployment/NyxAPI
+    esperado:  false
+    encontrado: ausente
+
+  [3.3 segredo em texto puro] (proibido) Deployment/NyxAPI/api
+    esperado:  secretKeyRef
+    encontrado: DATABASE_URL com valor literal
+
+  [1.3 quatro rótulos] (obrigatório) Service/nyx-api
+    esperado:  os quatro app.kubernetes.io
+    encontrado: faltam app.kubernetes.io/name, app.kubernetes.io/instance, app.kubernetes.io/part-of, app.kubernetes.io/managed-by
+
+  [1.4 selector casa com o pod] (obrigatório) Service/nyx-api
+    esperado:  selector idêntico aos rótulos do pod
+    encontrado: nenhum pod casa com {'app': 'nyx-api'} — Service sem endpoint
+
+JUSTIFICAR NO PR
+
+  [3.5 ServiceAccount dedicada] Deployment/NyxAPI — esperado SA própria, encontrado default
+
+Resumo: 9 barram, 1 pedem justificativa, 5 conformes.
+
+Regras 2.1, 3.1, 3.2 e 3.6 não são conferidas aqui — o catálogo do Trivy já as cobre. Rode: trivy config <caminho>
+Regras que exigem ler o projeto (para onde a probe aponta, caminhos graváveis, dono, dimensionamento) não são mecânicas — veja o corpo da skill.

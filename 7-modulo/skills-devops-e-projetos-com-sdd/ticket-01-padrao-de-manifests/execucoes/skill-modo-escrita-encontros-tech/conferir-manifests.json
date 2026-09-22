@@ -1,0 +1,224 @@
+[
+  {
+    "regra": "1.1 kebab-case",
+    "forca": "obrigatório",
+    "objeto": "ServiceAccount/encontros-tech-web",
+    "esperado": "minúsculas com hífen",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.2 namespace <cliente>-<ambiente>",
+    "forca": "obrigatório",
+    "objeto": "ServiceAccount/encontros-tech-web",
+    "esperado": "sufixo dev, stg ou prod",
+    "encontrado": "helio-prod",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.3 quatro rótulos",
+    "forca": "obrigatório",
+    "objeto": "ServiceAccount/encontros-tech-web",
+    "esperado": "os quatro app.kubernetes.io",
+    "encontrado": "completo",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.1 kebab-case",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "minúsculas com hífen",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.2 namespace <cliente>-<ambiente>",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "sufixo dev, stg ou prod",
+    "encontrado": "helio-prod",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.3 quatro rótulos",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "os quatro app.kubernetes.io",
+    "encontrado": "completo",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.4 selector casa com o pod",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "matchLabels idêntico aos rótulos do template",
+    "encontrado": "idêntico",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "2.2 readiness e liveness",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web/web",
+    "esperado": "as duas declaradas",
+    "encontrado": "as duas",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "2.3 replicas >= 2 em prod",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": ">= 2",
+    "encontrado": 2,
+    "veredito": "conforme"
+  },
+  {
+    "regra": "2.4 estratégia de atualização",
+    "forca": "obrigatório em prod",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "RollingUpdate, maxUnavailable 0, maxSurge 1",
+    "encontrado": {
+      "type": "RollingUpdate",
+      "rollingUpdate": {
+        "maxUnavailable": 0,
+        "maxSurge": 1
+      }
+    },
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.4 automountServiceAccountToken",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "false",
+    "encontrado": false,
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.5 ServiceAccount dedicada",
+    "forca": "recomendado",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "SA própria",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.7 registry interno",
+    "forca": "obrigatório",
+    "objeto": "Deployment/encontros-tech-web/web",
+    "esperado": "registry.metacortex.io",
+    "encontrado": "registry.metacortex.io/encontros-tech/web:v1",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.1 kebab-case",
+    "forca": "obrigatório",
+    "objeto": "Service/encontros-tech-web",
+    "esperado": "minúsculas com hífen",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.2 namespace <cliente>-<ambiente>",
+    "forca": "obrigatório",
+    "objeto": "Service/encontros-tech-web",
+    "esperado": "sufixo dev, stg ou prod",
+    "encontrado": "helio-prod",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.3 quatro rótulos",
+    "forca": "obrigatório",
+    "objeto": "Service/encontros-tech-web",
+    "esperado": "os quatro app.kubernetes.io",
+    "encontrado": "completo",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.1 kebab-case",
+    "forca": "obrigatório",
+    "objeto": "PodDisruptionBudget/encontros-tech-web",
+    "esperado": "minúsculas com hífen",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.2 namespace <cliente>-<ambiente>",
+    "forca": "obrigatório",
+    "objeto": "PodDisruptionBudget/encontros-tech-web",
+    "esperado": "sufixo dev, stg ou prod",
+    "encontrado": "helio-prod",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.3 quatro rótulos",
+    "forca": "obrigatório",
+    "objeto": "PodDisruptionBudget/encontros-tech-web",
+    "esperado": "os quatro app.kubernetes.io",
+    "encontrado": "completo",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.1 kebab-case",
+    "forca": "obrigatório",
+    "objeto": "Job/encontros-tech-schema",
+    "esperado": "minúsculas com hífen",
+    "encontrado": "encontros-tech-schema",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.2 namespace <cliente>-<ambiente>",
+    "forca": "obrigatório",
+    "objeto": "Job/encontros-tech-schema",
+    "esperado": "sufixo dev, stg ou prod",
+    "encontrado": "helio-prod",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.3 quatro rótulos",
+    "forca": "obrigatório",
+    "objeto": "Job/encontros-tech-schema",
+    "esperado": "os quatro app.kubernetes.io",
+    "encontrado": "completo",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.4 automountServiceAccountToken",
+    "forca": "obrigatório",
+    "objeto": "Job/encontros-tech-schema",
+    "esperado": "false",
+    "encontrado": false,
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.5 ServiceAccount dedicada",
+    "forca": "recomendado",
+    "objeto": "Job/encontros-tech-schema",
+    "esperado": "SA própria",
+    "encontrado": "encontros-tech-web",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "3.7 registry interno",
+    "forca": "obrigatório",
+    "objeto": "Job/encontros-tech-schema/schema",
+    "esperado": "registry.metacortex.io",
+    "encontrado": "registry.metacortex.io/encontros-tech/web:v1",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "1.4 selector casa com o pod",
+    "forca": "obrigatório",
+    "objeto": "Service/encontros-tech-web",
+    "esperado": "selector idêntico aos rótulos do pod",
+    "encontrado": "idêntico",
+    "veredito": "conforme"
+  },
+  {
+    "regra": "2.5 PodDisruptionBudget em prod",
+    "forca": "recomendado",
+    "objeto": "Deployment/encontros-tech-web",
+    "esperado": "PDB cobrindo o workload",
+    "encontrado": "existe",
+    "veredito": "conforme"
+  }
+]
