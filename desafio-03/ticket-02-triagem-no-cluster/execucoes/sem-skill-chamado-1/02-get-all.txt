@@ -1,0 +1,19 @@
+$ kubectl get all -n nyx-prod
+# coletado em: 2026-09-22T09:17:25-03:00
+-----
+NAME                                READY   STATUS             RESTARTS        AGE
+pod/nyx-api-6bb9d659c5-fzv86        0/1     CrashLoopBackOff   5 (3m27s ago)   9m17s
+pod/nyx-api-6bb9d659c5-jcz42        0/1     CrashLoopBackOff   7 (75s ago)     12m
+pod/nyx-postgres-5c64c56fc4-5ckmm   1/1     Running            0               15m
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/nyx-api        ClusterIP   10.96.125.187   <none>        80/TCP     15m
+service/nyx-postgres   ClusterIP   10.96.235.35    <none>        5432/TCP   15m
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/nyx-api        0/2     2            0           15m
+deployment.apps/nyx-postgres   1/1     1            1           15m
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/nyx-api-6bb9d659c5        2         2         0       12m
+replicaset.apps/nyx-postgres-5c64c56fc4   1         1         1       15m

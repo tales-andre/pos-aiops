@@ -1,0 +1,66 @@
+Name:             orion-web-6788bb6d46-7hmm6
+Namespace:        orion-stg
+Priority:         0
+Service Account:  default
+Node:             metacortex-lab-control-plane/172.18.0.2
+Start Time:       Tue, 22 Sep 2026 09:01:44 -0300
+Labels:           app=orion-web
+                  pod-template-hash=6788bb6d46
+Annotations:      <none>
+Status:           Pending
+IP:               10.244.0.10
+IPs:
+  IP:           10.244.0.10
+Controlled By:  ReplicaSet/orion-web-6788bb6d46
+Containers:
+  web:
+    Container ID:   
+    Image:          fabricioveronez/fake-shop:v1.14.2
+    Image ID:       
+    Port:           5000/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       ImagePullBackOff
+    Ready:          False
+    Restart Count:  0
+    Environment:
+      DB_HOST:                   orion-postgres
+      DB_NAME:                   ecommerce
+      DB_USER:                   ecommerce
+      DB_PASSWORD:               Pg1234
+      FLASK_APP:                 index.py
+      PROMETHEUS_MULTIPROC_DIR:  /tmp/metrics
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-swk77 (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-swk77:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                 From               Message
+  ----     ------     ----                ----               -------
+  Normal   Scheduled  14m                 default-scheduler  Successfully assigned orion-stg/orion-web-6788bb6d46-7hmm6 to metacortex-lab-control-plane
+  Normal   Pulling    12m (x4 over 14m)   kubelet            spec.containers{web}: Pulling image "fabricioveronez/fake-shop:v1.14.2"
+  Warning  Failed     12m (x4 over 14m)   kubelet            spec.containers{web}: Failed to pull image "fabricioveronez/fake-shop:v1.14.2": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/fake-shop:v1.14.2": failed to resolve reference "docker.io/fabricioveronez/fake-shop:v1.14.2": docker.io/fabricioveronez/fake-shop:v1.14.2: not found
+  Warning  Failed     12m (x4 over 14m)   kubelet            spec.containers{web}: Error: ErrImagePull
+  Warning  Failed     12m (x6 over 14m)   kubelet            spec.containers{web}: Error: ImagePullBackOff
+  Normal   BackOff    34s (x63 over 14m)  kubelet            spec.containers{web}: Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+=== containerStatuses (json) ===
+{"waiting":{"message":"Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"","reason":"ImagePullBackOff"}}
+=== deployment conditions ===
+Available=False MinimumReplicasUnavailable: Deployment does not have minimum availability.
+Progressing=False ProgressDeadlineExceeded: ReplicaSet "orion-web-6788bb6d46" has timed out progressing.

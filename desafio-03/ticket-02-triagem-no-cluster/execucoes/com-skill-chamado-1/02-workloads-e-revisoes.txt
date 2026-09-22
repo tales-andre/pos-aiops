@@ -1,0 +1,18 @@
+$ kubectl get deploy,rs,pods -n nyx-prod -o wide
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                             SELECTOR
+deployment.apps/nyx-api        0/2     2            0           14m   api          fabricioveronez/kube-news:v1.0.0   app=nyx-api
+deployment.apps/nyx-postgres   1/1     1            1           14m   postgres     postgres:16-alpine                 app=nyx-postgres
+
+NAME                                      DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                             SELECTOR
+replicaset.apps/nyx-api-6bb9d659c5        2         2         0       10m   api          fabricioveronez/kube-news:v1.0.0   app=nyx-api,pod-template-hash=6bb9d659c5
+replicaset.apps/nyx-postgres-5c64c56fc4   1         1         1       14m   postgres     postgres:16-alpine                 app=nyx-postgres,pod-template-hash=5c64c56fc4
+
+NAME                                READY   STATUS             RESTARTS        AGE     IP            NODE                           NOMINATED NODE   READINESS GATES
+pod/nyx-api-6bb9d659c5-fzv86        0/1     CrashLoopBackOff   5 (116s ago)    7m46s   10.244.0.18   metacortex-lab-control-plane   <none>           <none>
+pod/nyx-api-6bb9d659c5-jcz42        0/1     CrashLoopBackOff   6 (4m49s ago)   10m     10.244.0.15   metacortex-lab-control-plane   <none>           <none>
+pod/nyx-postgres-5c64c56fc4-5ckmm   1/1     Running            0               14m     10.244.0.5    metacortex-lab-control-plane   <none>           <none>
+
+$ kubectl get deploy nyx-api -n nyx-prod -o jsonpath revisions/image
+RS                        REVISION   IMAGE                              DESIRED   CURRENT
+nyx-api-6bb9d659c5        <none>     fabricioveronez/kube-news:v1.0.0   2         2
+nyx-postgres-5c64c56fc4   <none>     postgres:16-alpine                 1         1

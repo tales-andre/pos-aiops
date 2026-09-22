@@ -1,0 +1,140 @@
+$ kubectl get deployment nyx-api -n nyx-stg -o yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "2"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"nyx-api","namespace":"nyx-stg"},"spec":{"replicas":2,"selector":{"matchLabels":{"app":"nyxapi"}},"template":{"metadata":{"labels":{"app":"nyxapi"}},"spec":{"containers":[{"env":[{"name":"DB_HOST","value":"nyx-postgres"},{"name":"DB_DATABASE","value":"kubedevnews"},{"name":"DB_USERNAME","value":"kubedevnews"},{"name":"DB_PASSWORD","value":"Pg#123"}],"image":"fabricioveronez/kube-news:v1.0.0","livenessProbe":{"httpGet":{"path":"/health","port":8080},"initialDelaySeconds":20},"name":"api","ports":[{"containerPort":8080}],"readinessProbe":{"httpGet":{"path":"/ready","port":8080},"initialDelaySeconds":10}}]}}}}
+  creationTimestamp: "2026-09-22T12:01:45Z"
+  generation: 2
+  name: nyx-api
+  namespace: nyx-stg
+  resourceVersion: "1442"
+  uid: b183e9f3-45e9-4c58-b043-9853ae368ec9
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nyxapi
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nyxapi
+    spec:
+      containers:
+      - env:
+        - name: DB_HOST
+          value: nyx-postgres
+        - name: DB_DATABASE
+          value: kubedevnews
+        - name: DB_USERNAME
+          value: kubedevnews
+        - name: DB_PASSWORD
+          value: Pg#123
+        image: fabricioveronez/kube-news:v1.0.0
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: api
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /ready
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2026-09-22T12:05:51Z"
+    lastUpdateTime: "2026-09-22T12:05:51Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-09-22T12:01:45Z"
+    lastUpdateTime: "2026-09-22T12:05:51Z"
+    message: ReplicaSet "nyx-api-69695bc4d6" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 2
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2
+
+$ kubectl describe deployment nyx-api -n nyx-stg
+Name:                   nyx-api
+Namespace:              nyx-stg
+CreationTimestamp:      Tue, 22 Sep 2026 09:01:45 -0300
+Labels:                 <none>
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=nyxapi
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=nyxapi
+  Containers:
+   api:
+    Image:      fabricioveronez/kube-news:v1.0.0
+    Port:       8080/TCP
+    Host Port:  0/TCP
+    Liveness:   http-get http://:8080/health delay=20s timeout=1s period=10s #success=1 #failure=3
+    Readiness:  http-get http://:8080/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      DB_HOST:      nyx-postgres
+      DB_DATABASE:  kubedevnews
+      DB_USERNAME:  kubedevnews
+      DB_PASSWORD:  Pg#123
+    Mounts:         <none>
+  Volumes:          <none>
+  Node-Selectors:   <none>
+  Tolerations:      <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  nyx-api-75b85c8454 (0/0 replicas created)
+NewReplicaSet:   nyx-api-69695bc4d6 (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  15m   deployment-controller  Scaled up replica set nyx-api-75b85c8454 to 2
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled up replica set nyx-api-69695bc4d6 to 1
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled down replica set nyx-api-75b85c8454 to 1 from 2
+  Normal  ScalingReplicaSet  11m   deployment-controller  Scaled up replica set nyx-api-69695bc4d6 to 2 from 1
+  Normal  ScalingReplicaSet  10m   deployment-controller  Scaled down replica set nyx-api-75b85c8454 to 0 from 1

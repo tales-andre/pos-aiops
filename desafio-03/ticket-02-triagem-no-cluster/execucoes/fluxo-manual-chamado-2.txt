@@ -1,0 +1,27 @@
+### 1. estado dos pods
+NAME                            READY   STATUS             RESTARTS   AGE
+orion-postgres-df9cd6bc-cq4r9   1/1     Running            0          8m58s
+orion-web-6788bb6d46-7hmm6      0/1     ImagePullBackOff   0          8m58s
+orion-web-6788bb6d46-hxlbl      0/1     ImagePullBackOff   0          8m58s
+orion-web-6788bb6d46-qk52g      0/1     ImagePullBackOff   0          8m58s
+
+### 2. estado do container (waiting)
+orion-web-6788bb6d46-7hmm6  reason=ImagePullBackOff
+   msg=Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+orion-web-6788bb6d46-hxlbl  reason=ImagePullBackOff
+   msg=Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+orion-web-6788bb6d46-qk52g  reason=ImagePullBackOff
+   msg=Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+### 3. eventos
+Warning   Failed              Error: ImagePullBackOff
+Normal    BackOff             Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+Normal    BackOff             Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+Normal    BackOff             Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+### 4. imagem declarada
+fabricioveronez/fake-shop:v1.14.2
+
+### 5. o que esta saudavel ao lado
+NAME                            READY   STATUS    RESTARTS   AGE
+orion-postgres-df9cd6bc-cq4r9   1/1     Running   0          8m59s

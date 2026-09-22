@@ -1,0 +1,7 @@
+$ kubectl get pods -n nyx-prod -o wide
+# coletado em: 2026-09-22T09:17:25-03:00
+-----
+NAME                            READY   STATUS             RESTARTS        AGE     IP            NODE                           NOMINATED NODE   READINESS GATES
+nyx-api-6bb9d659c5-fzv86        0/1     CrashLoopBackOff   5 (3m27s ago)   9m17s   10.244.0.18   metacortex-lab-control-plane   <none>           <none>
+nyx-api-6bb9d659c5-jcz42        0/1     CrashLoopBackOff   7 (75s ago)     12m     10.244.0.15   metacortex-lab-control-plane   <none>           <none>
+nyx-postgres-5c64c56fc4-5ckmm   1/1     Running            0               15m     10.244.0.5    metacortex-lab-control-plane   <none>           <none>

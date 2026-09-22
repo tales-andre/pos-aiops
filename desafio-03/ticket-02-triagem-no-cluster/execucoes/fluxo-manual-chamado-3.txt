@@ -1,0 +1,19 @@
+### 1. estado dos pods (saudaveis!)
+NAME                            READY   STATUS    RESTARTS   AGE
+nyx-api-69695bc4d6-4927k        1/1     Running   0          5m30s
+nyx-api-69695bc4d6-j882k        1/1     Running   0          5m9s
+nyx-postgres-5c64c56fc4-dp6zk   1/1     Running   0          8m58s
+
+### 2. o Service existe
+NAME      TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE
+nyx-api   ClusterIP   10.96.16.24   <none>        80/TCP    8m58s
+
+### 3. Endpoints - o campo de enderecos
+0
+0 (campo ausente, nao vazio)
+NAME      ENDPOINTS   AGE
+nyx-api   <none>      8m58s
+
+### 4. selector do Service x rotulos do pod
+Service selector: {"app":"nyx-api"}
+Rotulos do pod:   {"app":"nyxapi","pod-template-hash":"69695bc4d6"}

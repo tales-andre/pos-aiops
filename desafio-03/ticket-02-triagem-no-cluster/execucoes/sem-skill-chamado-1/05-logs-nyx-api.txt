@@ -1,0 +1,15 @@
+$ kubectl logs <pod> -n nyx-prod [--previous]
+# coletado em: 2026-09-22T09:17:26-03:00
+# OBSERVACAO: todas as saidas abaixo vem VAZIAS. O processo e morto pelo kernel
+#             (OOM) antes de conseguir emitir qualquer linha de log.
+-----
+=== nyx-api-6bb9d659c5-fzv86 (instancia atual) ===
+[fim - 0 linhas]
+=== nyx-api-6bb9d659c5-fzv86 (--previous) ===
+[fim - 0 linhas]
+
+=== nyx-api-6bb9d659c5-jcz42 (instancia atual) ===
+[fim - 0 linhas]
+=== nyx-api-6bb9d659c5-jcz42 (--previous) ===
+[fim - 0 linhas]
+

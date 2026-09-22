@@ -1,0 +1,46 @@
+$ kubectl get ingress -A
+No resources found
+
+$ kubectl get ns
+NAME                 STATUS   AGE
+default              Active   16m
+kube-node-lease      Active   16m
+kube-public          Active   16m
+kube-system          Active   16m
+local-path-storage   Active   16m
+nyx-prod             Active   14m
+nyx-stg              Active   14m
+orion-stg            Active   14m
+
+$ kubectl get svc -A
+NAMESPACE     NAME             TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                  AGE
+default       kubernetes       ClusterIP   10.96.0.1       <none>        443/TCP                  16m
+kube-system   kube-dns         ClusterIP   10.96.0.10      <none>        53/UDP,53/TCP,9153/TCP   16m
+nyx-prod      nyx-api          ClusterIP   10.96.125.187   <none>        80/TCP                   14m
+nyx-prod      nyx-postgres     ClusterIP   10.96.235.35    <none>        5432/TCP                 14m
+nyx-stg       nyx-api          ClusterIP   10.96.16.24     <none>        80/TCP                   14m
+nyx-stg       nyx-postgres     ClusterIP   10.96.106.165   <none>        5432/TCP                 14m
+orion-stg     orion-postgres   ClusterIP   10.96.109.85    <none>        5432/TCP                 14m
+orion-stg     orion-web        ClusterIP   10.96.253.29    <none>        80/TCP                   14m
+
+$ kubectl get pods -A -o wide
+NAMESPACE            NAME                                                   READY   STATUS             RESTARTS        AGE     IP            NODE                           NOMINATED NODE   READINESS GATES
+kube-system          coredns-5d78c9869d-956ld                               1/1     Running            0               16m     10.244.0.3    metacortex-lab-control-plane   <none>           <none>
+kube-system          coredns-5d78c9869d-b2822                               1/1     Running            0               16m     10.244.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          etcd-metacortex-lab-control-plane                      1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          kindnet-qs7p5                                          1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          kube-apiserver-metacortex-lab-control-plane            1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          kube-controller-manager-metacortex-lab-control-plane   1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          kube-proxy-q7tgz                                       1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+kube-system          kube-scheduler-metacortex-lab-control-plane            1/1     Running            0               16m     172.18.0.2    metacortex-lab-control-plane   <none>           <none>
+local-path-storage   local-path-provisioner-6bc4bddd6b-xdlnp                1/1     Running            0               16m     10.244.0.4    metacortex-lab-control-plane   <none>           <none>
+nyx-prod             nyx-api-6bb9d659c5-fzv86                               0/1     CrashLoopBackOff   5 (2m30s ago)   8m20s   10.244.0.18   metacortex-lab-control-plane   <none>           <none>
+nyx-prod             nyx-api-6bb9d659c5-jcz42                               0/1     CrashLoopBackOff   7 (18s ago)     11m     10.244.0.15   metacortex-lab-control-plane   <none>           <none>
+nyx-prod             nyx-postgres-5c64c56fc4-5ckmm                          1/1     Running            0               14m     10.244.0.5    metacortex-lab-control-plane   <none>           <none>
+nyx-stg              nyx-api-69695bc4d6-4927k                               1/1     Running            0               11m     10.244.0.16   metacortex-lab-control-plane   <none>           <none>
+nyx-stg              nyx-api-69695bc4d6-j882k                               1/1     Running            0               10m     10.244.0.17   metacortex-lab-control-plane   <none>           <none>
+nyx-stg              nyx-postgres-5c64c56fc4-dp6zk                          1/1     Running            0               14m     10.244.0.12   metacortex-lab-control-plane   <none>           <none>
+orion-stg            orion-postgres-df9cd6bc-cq4r9                          1/1     Running            0               14m     10.244.0.8    metacortex-lab-control-plane   <none>           <none>
+orion-stg            orion-web-6788bb6d46-7hmm6                             0/1     ImagePullBackOff   0               14m     10.244.0.10   metacortex-lab-control-plane   <none>           <none>
+orion-stg            orion-web-6788bb6d46-hxlbl                             0/1     ImagePullBackOff   0               14m     10.244.0.9    metacortex-lab-control-plane   <none>           <none>
+orion-stg            orion-web-6788bb6d46-qk52g                             0/1     ImagePullBackOff   0               14m     10.244.0.11   metacortex-lab-control-plane   <none>           <none>

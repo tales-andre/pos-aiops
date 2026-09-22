@@ -1,0 +1,26 @@
+### 1. estado dos pods
+NAME                            READY   STATUS             RESTARTS       AGE     IP            NODE                           NOMINATED NODE   READINESS GATES
+nyx-api-6bb9d659c5-fzv86        0/1     CrashLoopBackOff   3 (45s ago)    2m19s   10.244.0.18   metacortex-lab-control-plane   <none>           <none>
+nyx-api-6bb9d659c5-jcz42        0/1     CrashLoopBackOff   5 (2m2s ago)   5m14s   10.244.0.15   metacortex-lab-control-plane   <none>           <none>
+nyx-postgres-5c64c56fc4-5ckmm   1/1     Running            0              8m43s   10.244.0.5    metacortex-lab-control-plane   <none>           <none>
+
+### 2. estado do container (lastState)
+nyx-api-6bb9d659c5-fzv86  lastState.reason=OOMKilled  exitCode=137  restarts=3
+nyx-api-6bb9d659c5-jcz42  lastState.reason=OOMKilled  exitCode=137  restarts=5
+
+### 3. limites declarados
+{"limits":{"cpu":"200m","memory":"24Mi"},"requests":{"cpu":"50m","memory":"16Mi"}}
+
+### 4. eventos
+Normal    SuccessfulCreate    nyx-api-6bb9d659c5              Created pod: nyx-api-6bb9d659c5-fzv86
+Normal    ScalingReplicaSet   nyx-api                         Scaled up replica set nyx-api-6bb9d659c5 to 2 from 1
+Normal    Scheduled           nyx-api-6bb9d659c5-fzv86        Successfully assigned nyx-prod/nyx-api-6bb9d659c5-fzv86 to metacortex-lab-control-plane
+Normal    Created             nyx-api-6bb9d659c5-fzv86        Created container api
+Normal    Pulled              nyx-api-6bb9d659c5-fzv86        Container image "fabricioveronez/kube-news:v1.0.0" already present on machine
+Normal    Started             nyx-api-6bb9d659c5-fzv86        Started container api
+Warning   BackOff             nyx-api-6bb9d659c5-jcz42        Back-off restarting failed container api in pod nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)
+Warning   BackOff             nyx-api-6bb9d659c5-fzv86        Back-off restarting failed container api in pod nyx-api-6bb9d659c5-fzv86_nyx-prod(4b138a11-89e6-4453-b677-96dc88db3b71)
+
+### 5. o que esta saudavel ao lado
+NAME                            READY   STATUS    RESTARTS   AGE
+nyx-postgres-5c64c56fc4-5ckmm   1/1     Running   0          8m44s

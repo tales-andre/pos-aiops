@@ -1,0 +1,83 @@
+==============================================================
+ NAMESPACE: orion-stg
+ coletado em: 2026-09-22T12:15:35Z
+==============================================================
+
+--- 1. WORKLOADS: prontos sobre desejados ---
+  orion-postgres: 1/1 prontos
+  orion-web: 0/3 prontos
+    condicao Available=False  motivo=MinimumReplicasUnavailable
+      Deployment does not have minimum availability.
+    condicao Progressing=False  motivo=ProgressDeadlineExceeded
+      ReplicaSet "orion-web-6788bb6d46" has timed out progressing.
+
+--- 2. PODS e ESTADO DO CONTAINER ---
+(a causa de reinicio vive aqui, nao nos eventos)
+
+  pod orion-postgres-df9cd6bc-cq4r9  fase=Running
+    rotulos: {'app': 'orion-postgres', 'pod-template-hash': 'df9cd6bc'}
+    container postgres  pronto=True  reinicios=0
+
+  pod orion-web-6788bb6d46-7hmm6  fase=Pending
+    rotulos: {'app': 'orion-web', 'pod-template-hash': '6788bb6d46'}
+    container web  pronto=False  reinicios=0
+      ESPERANDO: ImagePullBackOff
+        Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+  pod orion-web-6788bb6d46-hxlbl  fase=Pending
+    rotulos: {'app': 'orion-web', 'pod-template-hash': '6788bb6d46'}
+    container web  pronto=False  reinicios=0
+      ESPERANDO: ImagePullBackOff
+        Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+  pod orion-web-6788bb6d46-qk52g  fase=Pending
+    rotulos: {'app': 'orion-web', 'pod-template-hash': '6788bb6d46'}
+    container web  pronto=False  reinicios=0
+      ESPERANDO: ImagePullBackOff
+        Back-off pulling image "fabricioveronez/fake-shop:v1.14.2"
+
+--- 3. RECURSOS DECLARADOS ---
+(compare com a causa da morte: OOMKilled aponta para limits.memory)
+  postgres: SEM requests/limits
+  web: SEM requests/limits
+
+--- 4. EVENTOS ---
+(Warning primeiro; nem toda causa aparece aqui)
+  Warning Failed  orion-web-6788bb6d46-qk52g
+    Failed to pull image "fabricioveronez/fake-shop:v1.14.2": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/fake-shop:v1.14.2": failed to resolve reference "docker.io/fabricioveronez/fake-shop:v1.14.2": docker.io/fabricioveronez/fake-shop:v1.14.2: not found
+  Warning Failed  orion-web-6788bb6d46-qk52g
+    Error: ErrImagePull
+  Warning Failed  orion-web-6788bb6d46-hxlbl
+    Failed to pull image "fabricioveronez/fake-shop:v1.14.2": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/fake-shop:v1.14.2": failed to resolve reference "docker.io/fabricioveronez/fake-shop:v1.14.2": docker.io/fabricioveronez/fake-shop:v1.14.2: not found
+  Warning Failed  orion-web-6788bb6d46-hxlbl
+    Error: ErrImagePull
+  Warning Failed  orion-web-6788bb6d46-7hmm6
+    Failed to pull image "fabricioveronez/fake-shop:v1.14.2": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/fake-shop:v1.14.2": failed to resolve reference "docker.io/fabricioveronez/fake-shop:v1.14.2": docker.io/fabricioveronez/fake-shop:v1.14.2: not found
+  Warning Failed  orion-web-6788bb6d46-7hmm6
+    Error: ErrImagePull
+  Warning Failed  orion-web-6788bb6d46-qk52g
+    Error: ImagePullBackOff
+  Warning Failed  orion-web-6788bb6d46-hxlbl
+    Error: ImagePullBackOff
+  Warning Failed  orion-web-6788bb6d46-7hmm6
+    Error: ImagePullBackOff
+
+--- 5. REDE: Service, Endpoints e coerencia do selector ---
+(campo de enderecos AUSENTE e diferente de lista vazia)
+
+  service orion-postgres  tipo=ClusterIP  selector={'app': 'orion-postgres'}
+    1 pod(s) casam com o selector
+
+  service orion-web  tipo=ClusterIP  selector={'app': 'orion-web'}
+    3 pod(s) casam com o selector
+
+  endpoints orion-postgres: 1 endereco(s)
+  endpoints orion-web: 0 endereco(s)
+
+--- 6. O QUE ESTA SAUDAVEL AO LADO ---
+(triagem se distingue de chute por saber o que NAO quebrou)
+  ok: orion-postgres-df9cd6bc-cq4r9
+
+==============================================================
+ fim do retrato. nenhuma escrita foi feita no cluster.
+==============================================================

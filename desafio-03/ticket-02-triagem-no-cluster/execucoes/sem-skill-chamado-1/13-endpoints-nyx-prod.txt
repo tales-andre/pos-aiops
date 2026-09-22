@@ -1,0 +1,6 @@
+$ kubectl get endpoints -n nyx-prod
+# coletado em: 2026-09-22T09:17:26-03:00
+-----
+NAME           ENDPOINTS         AGE
+nyx-api                          15m
+nyx-postgres   10.244.0.5:5432   15m

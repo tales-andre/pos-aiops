@@ -1,0 +1,33 @@
+$ kubectl logs nyx-postgres-5c64c56fc4-5ckmm -n nyx-prod --tail=30
+# coletado em: 2026-09-22T09:17:26-03:00
+-----
+2026-09-22 12:02:00.864 UTC [44] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-22 12:02:00.957 UTC [47] LOG:  database system was shut down at 2026-09-22 12:01:53 UTC
+2026-09-22 12:02:00.968 UTC [44] LOG:  database system is ready to accept connections
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+waiting for server to shut down....2026-09-22 12:02:01.740 UTC [44] LOG:  received fast shutdown request
+2026-09-22 12:02:01.754 UTC [44] LOG:  aborting any active transactions
+2026-09-22 12:02:01.758 UTC [44] LOG:  background worker "logical replication launcher" (PID 50) exited with exit code 1
+2026-09-22 12:02:01.759 UTC [45] LOG:  shutting down
+2026-09-22 12:02:01.852 UTC [45] LOG:  checkpoint starting: shutdown immediate
+.2026-09-22 12:02:03.543 UTC [45] LOG:  checkpoint complete: wrote 926 buffers (5.7%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.197 s, sync=1.440 s, total=1.784 s; sync files=301, longest=0.650 s, average=0.005 s; distance=4283 kB, estimate=4283 kB; lsn=0/1925D68, redo lsn=0/1925D68
+2026-09-22 12:02:03.549 UTC [44] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+2026-09-22 12:02:03.611 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-09-22 12:02:03.611 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-09-22 12:02:03.611 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-09-22 12:02:03.634 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-09-22 12:02:03.661 UTC [60] LOG:  database system was shut down at 2026-09-22 12:02:03 UTC
+2026-09-22 12:02:03.681 UTC [1] LOG:  database system is ready to accept connections
+2026-09-22 12:07:03.017 UTC [58] LOG:  checkpoint starting: time
+2026-09-22 12:07:07.329 UTC [58] LOG:  checkpoint complete: wrote 45 buffers (0.3%); 0 WAL file(s) added, 0 removed, 0 recycled; write=4.268 s, sync=0.017 s, total=4.313 s; sync files=12, longest=0.010 s, average=0.002 s; distance=261 kB, estimate=261 kB; lsn=0/19671A0, redo lsn=0/1967168

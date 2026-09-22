@@ -1,0 +1,16 @@
+# CONTROLE: mesma aplicacao (mesma imagem) rodando em nyx-stg SEM limite de memoria
+# coletado em: 2026-09-22T09:17:28-03:00
+-----
+$ kubectl get pods -n nyx-stg
+NAME                            READY   STATUS    RESTARTS   AGE
+nyx-api-69695bc4d6-4927k        1/1     Running   0          12m
+nyx-api-69695bc4d6-j882k        1/1     Running   0          11m
+nyx-postgres-5c64c56fc4-dp6zk   1/1     Running   0          15m
+
+$ kubectl get deploy nyx-api -n nyx-stg -o jsonpath=image+resources
+fabricioveronez/kube-news:v1.0.0
+{}
+
+$ kubectl get deploy nyx-api -n nyx-prod -o jsonpath=image+resources
+fabricioveronez/kube-news:v1.0.0
+{"limits":{"cpu":"200m","memory":"24Mi"},"requests":{"cpu":"50m","memory":"16Mi"}}

@@ -1,0 +1,106 @@
+$ kubectl describe node metacortex-lab-control-plane
+# coletado em: 2026-09-22T09:17:26-03:00
+-----
+Name:               metacortex-lab-control-plane
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=metacortex-lab-control-plane
+                    kubernetes.io/os=linux
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        kubeadm.alpha.kubernetes.io/cri-socket: unix:///run/containerd/containerd.sock
+                    node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Tue, 22 Sep 2026 09:00:02 -0300
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  metacortex-lab-control-plane
+  AcquireTime:     <unset>
+  RenewTime:       Tue, 22 Sep 2026 09:17:23 -0300
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Tue, 22 Sep 2026 09:15:01 -0300   Tue, 22 Sep 2026 09:00:01 -0300   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Tue, 22 Sep 2026 09:15:01 -0300   Tue, 22 Sep 2026 09:00:01 -0300   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Tue, 22 Sep 2026 09:15:01 -0300   Tue, 22 Sep 2026 09:00:01 -0300   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Tue, 22 Sep 2026 09:15:01 -0300   Tue, 22 Sep 2026 09:00:25 -0300   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  172.18.0.2
+  Hostname:    metacortex-lab-control-plane
+Capacity:
+  cpu:                8
+  ephemeral-storage:  1055762868Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             7997664Ki
+  pods:               110
+Allocatable:
+  cpu:                8
+  ephemeral-storage:  1055762868Ki
+  hugepages-1Gi:      0
+  hugepages-2Mi:      0
+  memory:             7997664Ki
+  pods:               110
+System Info:
+  Machine ID:                 2eb37d3c08c2415c9803856507707f15
+  System UUID:                2eb37d3c08c2415c9803856507707f15
+  Boot ID:                    077aec83-ea7b-42c9-933d-7bf30456a3b8
+  Kernel Version:             6.6.87.2-microsoft-standard-WSL2
+  OS Image:                   Debian GNU/Linux 11 (bullseye)
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  containerd://1.7.1
+  Kubelet Version:            v1.27.3
+  Kube-Proxy Version:         v1.27.3
+PodCIDR:                      10.244.0.0/24
+PodCIDRs:                     10.244.0.0/24
+ProviderID:                   kind://docker/metacortex-lab/metacortex-lab-control-plane
+Non-terminated Pods:          (19 in total)
+  Namespace                   Name                                                    CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                                    ------------  ----------  ---------------  -------------  ---
+  kube-system                 coredns-5d78c9869d-956ld                                100m (1%)     0 (0%)      70Mi (0%)        170Mi (2%)     17m
+  kube-system                 coredns-5d78c9869d-b2822                                100m (1%)     0 (0%)      70Mi (0%)        170Mi (2%)     17m
+  kube-system                 etcd-metacortex-lab-control-plane                       100m (1%)     0 (0%)      100Mi (1%)       0 (0%)         17m
+  kube-system                 kindnet-qs7p5                                           100m (1%)     100m (1%)   50Mi (0%)        50Mi (0%)      17m
+  kube-system                 kube-apiserver-metacortex-lab-control-plane             250m (3%)     0 (0%)      0 (0%)           0 (0%)         17m
+  kube-system                 kube-controller-manager-metacortex-lab-control-plane    200m (2%)     0 (0%)      0 (0%)           0 (0%)         17m
+  kube-system                 kube-proxy-q7tgz                                        0 (0%)        0 (0%)      0 (0%)           0 (0%)         17m
+  kube-system                 kube-scheduler-metacortex-lab-control-plane             100m (1%)     0 (0%)      0 (0%)           0 (0%)         17m
+  local-path-storage          local-path-provisioner-6bc4bddd6b-xdlnp                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         17m
+  nyx-prod                    nyx-api-6bb9d659c5-fzv86                                50m (0%)      200m (2%)   16Mi (0%)        24Mi (0%)      9m18s
+  nyx-prod                    nyx-api-6bb9d659c5-jcz42                                50m (0%)      200m (2%)   16Mi (0%)        24Mi (0%)      12m
+  nyx-prod                    nyx-postgres-5c64c56fc4-5ckmm                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  nyx-stg                     nyx-api-69695bc4d6-4927k                                0 (0%)        0 (0%)      0 (0%)           0 (0%)         12m
+  nyx-stg                     nyx-api-69695bc4d6-j882k                                0 (0%)        0 (0%)      0 (0%)           0 (0%)         11m
+  nyx-stg                     nyx-postgres-5c64c56fc4-dp6zk                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  orion-stg                   orion-postgres-df9cd6bc-cq4r9                           0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  orion-stg                   orion-web-6788bb6d46-7hmm6                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  orion-stg                   orion-web-6788bb6d46-hxlbl                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+  orion-stg                   orion-web-6788bb6d46-qk52g                              0 (0%)        0 (0%)      0 (0%)           0 (0%)         15m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests     Limits
+  --------           --------     ------
+  cpu                1050m (13%)  500m (6%)
+  memory             322Mi (4%)   438Mi (5%)
+  ephemeral-storage  0 (0%)       0 (0%)
+  hugepages-1Gi      0 (0%)       0 (0%)
+  hugepages-2Mi      0 (0%)       0 (0%)
+Events:
+  Type    Reason                   Age                From             Message
+  ----    ------                   ----               ----             -------
+  Normal  Starting                 17m                kube-proxy       
+  Normal  NodeHasSufficientMemory  17m (x8 over 17m)  kubelet          Node metacortex-lab-control-plane status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    17m (x8 over 17m)  kubelet          Node metacortex-lab-control-plane status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     17m (x7 over 17m)  kubelet          Node metacortex-lab-control-plane status is now: NodeHasSufficientPID
+  Normal  NodeAllocatableEnforced  17m                kubelet          Updated Node Allocatable limit across pods
+  Normal  Starting                 17m                kubelet          Starting kubelet.
+  Normal  NodeAllocatableEnforced  17m                kubelet          Updated Node Allocatable limit across pods
+  Normal  NodeHasSufficientMemory  17m                kubelet          Node metacortex-lab-control-plane status is now: NodeHasSufficientMemory
+  Normal  NodeHasNoDiskPressure    17m                kubelet          Node metacortex-lab-control-plane status is now: NodeHasNoDiskPressure
+  Normal  NodeHasSufficientPID     17m                kubelet          Node metacortex-lab-control-plane status is now: NodeHasSufficientPID
+  Normal  RegisteredNode           17m                node-controller  Node metacortex-lab-control-plane event: Registered Node metacortex-lab-control-plane in Controller
+  Normal  NodeReady                17m                kubelet          Node metacortex-lab-control-plane status is now: NodeReady

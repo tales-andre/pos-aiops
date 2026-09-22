@@ -1,0 +1,132 @@
+--- NetworkPolicy no namespace (descarte de hipotese) ---
+$ kubectl get networkpolicy -n nyx-stg
+No resources found in nyx-stg namespace.
+$ kubectl get networkpolicy -A
+No resources found
+
+--- Logs dos pods nyx-api (ultimas 30 linhas cada) ---
+$ kubectl logs -n nyx-stg nyx-api-69695bc4d6-4927k --tail=30
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /
+Executing (default): SELECT "id", "title", "summary", "publishDate", "content", "createdAt", "updatedAt" FROM "Posts" AS "Post";
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+
+$ kubectl logs -n nyx-stg nyx-api-69695bc4d6-j882k --tail=30
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /ready
+Request Type: GET /health
+Request Type: GET /health
+Request Type: GET /ready
+
+--- describe de um pod nyx-api (probes/portas/condicoes) ---
+$ kubectl describe pod -n nyx-stg nyx-api-69695bc4d6-4927k
+Name:             nyx-api-69695bc4d6-4927k
+Namespace:        nyx-stg
+Priority:         0
+Service Account:  default
+Node:             metacortex-lab-control-plane/172.18.0.2
+Start Time:       Tue, 22 Sep 2026 09:05:13 -0300
+Labels:           app=nyxapi
+                  pod-template-hash=69695bc4d6
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.16
+IPs:
+  IP:           10.244.0.16
+Controlled By:  ReplicaSet/nyx-api-69695bc4d6
+Containers:
+  api:
+    Container ID:   containerd://ae6e69970cdde563e8fdd783d2ae5467432096ddc3fe1d50f81e52035ec4c0e6
+    Image:          fabricioveronez/kube-news:v1.0.0
+    Image ID:       docker.io/fabricioveronez/kube-news@sha256:f86b40ce1bcbdf297b6236a8212f3e66c8412113aaa8855ba2747c79182734e5
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Tue, 22 Sep 2026 09:05:24 -0300
+    Ready:          True
+    Restart Count:  0
+    Liveness:       http-get http://:8080/health delay=20s timeout=1s period=10s #success=1 #failure=3
+    Readiness:      http-get http://:8080/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      DB_HOST:      nyx-postgres
+      DB_DATABASE:  kubedevnews
+      DB_USERNAME:  kubedevnews
+      DB_PASSWORD:  Pg#123
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-nc9rm (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-nc9rm:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age   From               Message
+  ----    ------     ----  ----               -------
+  Normal  Scheduled  12m   default-scheduler  Successfully assigned nyx-stg/nyx-api-69695bc4d6-4927k to metacortex-lab-control-plane
+  Normal  Pulling    12m   kubelet            spec.containers{api}: Pulling image "fabricioveronez/kube-news:v1.0.0"
+  Normal  Pulled     11m   kubelet            spec.containers{api}: Successfully pulled image "fabricioveronez/kube-news:v1.0.0" in 894.040436ms (9.52381679s including waiting)
+  Normal  Created    11m   kubelet            spec.containers{api}: Created container api
+  Normal  Started    11m   kubelet            spec.containers{api}: Started container api

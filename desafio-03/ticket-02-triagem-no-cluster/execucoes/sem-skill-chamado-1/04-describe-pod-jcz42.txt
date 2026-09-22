@@ -1,0 +1,74 @@
+$ kubectl describe pod nyx-api-6bb9d659c5-jcz42 -n nyx-prod
+# coletado em: 2026-09-22T09:17:25-03:00
+-----
+Name:             nyx-api-6bb9d659c5-jcz42
+Namespace:        nyx-prod
+Priority:         0
+Service Account:  default
+Node:             metacortex-lab-control-plane/172.18.0.2
+Start Time:       Tue, 22 Sep 2026 09:05:13 -0300
+Labels:           app=nyx-api
+                  pod-template-hash=6bb9d659c5
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.15
+IPs:
+  IP:           10.244.0.15
+Controlled By:  ReplicaSet/nyx-api-6bb9d659c5
+Containers:
+  api:
+    Container ID:   containerd://69b862aaf296a8421bbe9590f41287784ec244f0b6c72fa717d0df9a0404cdd0
+    Image:          fabricioveronez/kube-news:v1.0.0
+    Image ID:       docker.io/fabricioveronez/kube-news@sha256:f86b40ce1bcbdf297b6236a8212f3e66c8412113aaa8855ba2747c79182734e5
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Tue, 22 Sep 2026 09:16:06 -0300
+      Finished:     Tue, 22 Sep 2026 09:16:10 -0300
+    Ready:          False
+    Restart Count:  7
+    Limits:
+      cpu:     200m
+      memory:  24Mi
+    Requests:
+      cpu:      50m
+      memory:   16Mi
+    Readiness:  http-get http://:8080/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+    Environment:
+      DB_HOST:      nyx-postgres
+      DB_DATABASE:  kubedevnews
+      DB_USERNAME:  kubedevnews
+      DB_PASSWORD:  Pg#123
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-59jtm (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             False 
+  ContainersReady   False 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-59jtm:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    Optional:                false
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason     Age                   From               Message
+  ----     ------     ----                  ----               -------
+  Normal   Scheduled  12m                   default-scheduler  Successfully assigned nyx-prod/nyx-api-6bb9d659c5-jcz42 to metacortex-lab-control-plane
+  Normal   Pulling    12m                   kubelet            spec.containers{api}: Pulling image "fabricioveronez/kube-news:v1.0.0"
+  Normal   Pulled     12m                   kubelet            spec.containers{api}: Successfully pulled image "fabricioveronez/kube-news:v1.0.0" in 8.878095727s (8.878220802s including waiting)
+  Normal   Created    10m (x5 over 12m)     kubelet            spec.containers{api}: Created container api
+  Normal   Started    10m (x5 over 12m)     kubelet            spec.containers{api}: Started container api
+  Normal   Pulled     10m (x4 over 12m)     kubelet            spec.containers{api}: Container image "fabricioveronez/kube-news:v1.0.0" already present on machine
+  Warning  BackOff    2m56s (x46 over 11m)  kubelet            spec.containers{api}: Back-off restarting failed container api in pod nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)

@@ -1,0 +1,4 @@
+$ kubectl get limitrange,resourcequota -n nyx-prod
+# coletado em: 2026-09-22T09:17:26-03:00
+-----
+No resources found in nyx-prod namespace.

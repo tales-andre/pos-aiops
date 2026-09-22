@@ -1,0 +1,52 @@
+{
+  "nota": "Tokens, chamadas de ferramenta e duracao de cada execucao, coletados da notificacao de termino de cada subagente. Todas as execucoes rodaram em sessao limpa, com o mesmo prompt de chamado, no mesmo cluster e no mesmo estado.",
+  "data": "2026-09-22",
+  "execucoes": [
+    {
+      "caso": "chamado-1-nyx-prod-oom",
+      "configuracao": "com_skill",
+      "tokens": 80425,
+      "chamadas_de_ferramenta": 13,
+      "duracao_ms": 208857,
+      "causa_encontrada": true,
+      "causa": "OOMKilled exitCode 137 contra limits.memory 24Mi"
+    },
+    {
+      "caso": "chamado-1-nyx-prod-oom",
+      "configuracao": "sem_skill",
+      "tokens": 79983,
+      "chamadas_de_ferramenta": 18,
+      "duracao_ms": 270182,
+      "causa_encontrada": true,
+      "causa": "OOMKilled exitCode 137 contra limits.memory 24Mi, com consumo real medido em 34 MiB via cgroup",
+      "observacao": "usou kubectl exec (verbo de escrita) para ler o cgroup em staging"
+    },
+    {
+      "caso": "chamado-2-orion-stg-tag-inexistente",
+      "configuracao": "com_skill",
+      "tokens": 66072,
+      "chamadas_de_ferramenta": 13,
+      "duracao_ms": 160701,
+      "causa_encontrada": true,
+      "causa": "tag v1.14.2 inexistente no registry, confirmada por HTTP 404 no Docker Hub"
+    },
+    {
+      "caso": "chamado-3-nyx-stg-selector",
+      "configuracao": "com_skill",
+      "tokens": 65120,
+      "chamadas_de_ferramenta": 12,
+      "duracao_ms": 137299,
+      "causa_encontrada": true,
+      "causa": "selector app=nyx-api contra rotulo do pod app=nyxapi"
+    },
+    {
+      "caso": "chamado-3-nyx-stg-selector",
+      "configuracao": "sem_skill",
+      "tokens": 75342,
+      "chamadas_de_ferramenta": 14,
+      "duracao_ms": 214973,
+      "causa_encontrada": true,
+      "causa": "selector app=nyx-api contra rotulo do pod app=nyxapi"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+=== kubectl get deploy -n orion-stg -o wide ===
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                              SELECTOR
+orion-postgres   1/1     1            1           14m   postgres     postgres:16-alpine                  app=orion-postgres
+orion-web        0/3     3            0           14m   web          fabricioveronez/fake-shop:v1.14.2   app=orion-web
+
+=== imagem declarada (deploy orion-web) ===
+fabricioveronez/fake-shop:v1.14.2
+
+=== kubectl get rs -n orion-stg -o wide ===
+NAME                      DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                              SELECTOR
+orion-postgres-df9cd6bc   1         1         1       14m   postgres     postgres:16-alpine                  app=orion-postgres,pod-template-hash=df9cd6bc
+orion-web-6788bb6d46      3         3         0       14m   web          fabricioveronez/fake-shop:v1.14.2   app=orion-web,pod-template-hash=6788bb6d46
+
+=== rollout history orion-web ===
+deployment.apps/orion-web 
+REVISION  CHANGE-CAUSE
+1         <none>
+
+
+=== get pods -o wide ===
+NAME                            READY   STATUS             RESTARTS   AGE   IP            NODE                           NOMINATED NODE   READINESS GATES
+orion-postgres-df9cd6bc-cq4r9   1/1     Running            0          14m   10.244.0.8    metacortex-lab-control-plane   <none>           <none>
+orion-web-6788bb6d46-7hmm6      0/1     ImagePullBackOff   0          14m   10.244.0.10   metacortex-lab-control-plane   <none>           <none>
+orion-web-6788bb6d46-hxlbl      0/1     ImagePullBackOff   0          14m   10.244.0.9    metacortex-lab-control-plane   <none>           <none>
+orion-web-6788bb6d46-qk52g      0/1     ImagePullBackOff   0          14m   10.244.0.11   metacortex-lab-control-plane   <none>           <none>
+
+=== endpoints ===
+NAME             ENDPOINTS         AGE
+orion-postgres   10.244.0.8:5432   14m
+orion-web                          14m

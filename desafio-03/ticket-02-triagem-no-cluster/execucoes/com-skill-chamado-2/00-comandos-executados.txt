@@ -1,0 +1,25 @@
+Triagem orion-stg — comandos executados (todos somente-leitura)
+Data: 2026-09-22
+KUBECONFIG=~/.kube/metacortex-lab.yaml (cluster kind metacortex-lab, via WSL)
+
+[01-snapshot.txt]
+  python3 /mnt/c/Users/tales/.claude/skills/triagem-de-cluster/scripts/snapshot.py orion-stg
+
+[02-declaracao-e-replicasets.txt]
+  kubectl get deploy -n orion-stg -o wide
+  kubectl get deploy orion-web -n orion-stg -o jsonpath='{.spec.template.spec.containers[*].image}'
+  kubectl get rs -n orion-stg -o wide
+  kubectl rollout history deploy/orion-web -n orion-stg
+  kubectl get pods -n orion-stg -o wide
+  kubectl get endpoints -n orion-stg -o wide
+
+[03-describe-pod-orion-web.txt]
+  kubectl describe pod orion-web-6788bb6d46-7hmm6 -n orion-stg
+  kubectl get pod orion-web-6788bb6d46-7hmm6 -n orion-stg -o jsonpath='{.status.containerStatuses[*].state}'
+  kubectl get deploy orion-web -n orion-stg -o jsonpath='{range .status.conditions[*]}...{end}'
+
+[04-registry-dockerhub-tags.txt]  (fora do cluster)
+  curl -s 'https://hub.docker.com/v2/repositories/fabricioveronez/fake-shop/tags?page_size=100'
+  curl -s 'https://hub.docker.com/v2/repositories/fabricioveronez/fake-shop/tags/v1.14.2'
+
+NENHUMA escrita foi feita no cluster: nenhum apply, patch, scale, rollout undo, delete ou exec.

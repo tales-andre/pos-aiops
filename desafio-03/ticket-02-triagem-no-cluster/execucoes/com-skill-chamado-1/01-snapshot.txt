@@ -1,0 +1,75 @@
+==============================================================
+ NAMESPACE: nyx-prod
+ coletado em: 2026-09-22T12:15:30Z
+==============================================================
+
+--- 1. WORKLOADS: prontos sobre desejados ---
+  nyx-api: 0/2 prontos
+    condicao Available=False  motivo=MinimumReplicasUnavailable
+      Deployment does not have minimum availability.
+  nyx-postgres: 1/1 prontos
+
+--- 2. PODS e ESTADO DO CONTAINER ---
+(a causa de reinicio vive aqui, nao nos eventos)
+
+  pod nyx-api-6bb9d659c5-fzv86  fase=Running
+    rotulos: {'app': 'nyx-api', 'pod-template-hash': '6bb9d659c5'}
+    container api  pronto=False  reinicios=5
+      ESPERANDO: CrashLoopBackOff
+        back-off 5m0s restarting failed container=api pod=nyx-api-6bb9d659c5-fzv86_nyx-prod(4b138a11-89e6-4453-b677-96dc88db3b71)
+      ULTIMA MORTE: OOMKilled exitCode=137
+
+  pod nyx-api-6bb9d659c5-jcz42  fase=Running
+    rotulos: {'app': 'nyx-api', 'pod-template-hash': '6bb9d659c5'}
+    container api  pronto=False  reinicios=6
+      ESPERANDO: CrashLoopBackOff
+        back-off 5m0s restarting failed container=api pod=nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)
+      ULTIMA MORTE: OOMKilled exitCode=137
+
+  pod nyx-postgres-5c64c56fc4-5ckmm  fase=Running
+    rotulos: {'app': 'nyx-postgres', 'pod-template-hash': '5c64c56fc4'}
+    container postgres  pronto=True  reinicios=0
+
+--- 3. RECURSOS DECLARADOS ---
+(compare com a causa da morte: OOMKilled aponta para limits.memory)
+  api: {'limits': {'cpu': '200m', 'memory': '24Mi'}, 'requests': {'cpu': '50m', 'memory': '16Mi'}}
+  postgres: SEM requests/limits
+
+--- 4. EVENTOS ---
+(Warning primeiro; nem toda causa aparece aqui)
+  Warning Failed  nyx-api-5ddc9d474c-gz7v2
+    Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+  Warning Failed  nyx-api-5ddc9d474c-gz7v2
+    Error: ErrImagePull
+  Warning Failed  nyx-api-5ddc9d474c-hmmv9
+    Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+  Warning Failed  nyx-api-5ddc9d474c-hmmv9
+    Error: ErrImagePull
+  Warning Failed  nyx-api-5ddc9d474c-hmmv9
+    Error: ImagePullBackOff
+  Warning Failed  nyx-api-5ddc9d474c-gz7v2
+    Error: ImagePullBackOff
+  Warning BackOff  nyx-api-6bb9d659c5-fzv86
+    Back-off restarting failed container api in pod nyx-api-6bb9d659c5-fzv86_nyx-prod(4b138a11-89e6-4453-b677-96dc88db3b71)
+  Warning BackOff  nyx-api-6bb9d659c5-jcz42
+    Back-off restarting failed container api in pod nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)
+
+--- 5. REDE: Service, Endpoints e coerencia do selector ---
+(campo de enderecos AUSENTE e diferente de lista vazia)
+
+  service nyx-api  tipo=ClusterIP  selector={'app': 'nyx-api'}
+    2 pod(s) casam com o selector
+
+  service nyx-postgres  tipo=ClusterIP  selector={'app': 'nyx-postgres'}
+    1 pod(s) casam com o selector
+
+  endpoints nyx-api: 0 endereco(s)
+  endpoints nyx-postgres: 1 endereco(s)
+
+--- 6. O QUE ESTA SAUDAVEL AO LADO ---
+(triagem se distingue de chute por saber o que NAO quebrou)
+  ok: nyx-postgres-5c64c56fc4-5ckmm
+
+==============================================================
+ fim do retrato. nenhuma escrita foi feita no cluster.
+==============================================================

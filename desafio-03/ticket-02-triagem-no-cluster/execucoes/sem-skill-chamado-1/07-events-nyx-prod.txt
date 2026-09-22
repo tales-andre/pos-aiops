@@ -1,0 +1,42 @@
+$ kubectl get events -n nyx-prod --sort-by=.lastTimestamp
+# coletado em: 2026-09-22T09:17:26-03:00
+-----
+LAST SEEN   TYPE      REASON              OBJECT                               MESSAGE
+15m         Normal    Scheduled           pod/nyx-api-5ddc9d474c-hmmv9         Successfully assigned nyx-prod/nyx-api-5ddc9d474c-hmmv9 to metacortex-lab-control-plane
+15m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-5ddc9d474c to 2
+15m         Normal    Scheduled           pod/nyx-api-5ddc9d474c-gz7v2         Successfully assigned nyx-prod/nyx-api-5ddc9d474c-gz7v2 to metacortex-lab-control-plane
+15m         Normal    SuccessfulCreate    replicaset/nyx-api-5ddc9d474c        Created pod: nyx-api-5ddc9d474c-hmmv9
+15m         Normal    Scheduled           pod/nyx-postgres-5c64c56fc4-5ckmm    Successfully assigned nyx-prod/nyx-postgres-5c64c56fc4-5ckmm to metacortex-lab-control-plane
+15m         Normal    SuccessfulCreate    replicaset/nyx-postgres-5c64c56fc4   Created pod: nyx-postgres-5c64c56fc4-5ckmm
+15m         Normal    ScalingReplicaSet   deployment/nyx-postgres              Scaled up replica set nyx-postgres-5c64c56fc4 to 1
+15m         Normal    SuccessfulCreate    replicaset/nyx-api-5ddc9d474c        Created pod: nyx-api-5ddc9d474c-gz7v2
+15m         Normal    Pulling             pod/nyx-postgres-5c64c56fc4-5ckmm    Pulling image "postgres:16-alpine"
+15m         Normal    Pulled              pod/nyx-postgres-5c64c56fc4-5ckmm    Successfully pulled image "postgres:16-alpine" in 10.407176802s (10.407308302s including waiting)
+15m         Normal    Created             pod/nyx-postgres-5c64c56fc4-5ckmm    Created container postgres
+15m         Normal    Started             pod/nyx-postgres-5c64c56fc4-5ckmm    Started container postgres
+14m         Normal    Pulling             pod/nyx-api-5ddc9d474c-gz7v2         Pulling image "fabricioveronez/kube-news:v1"
+13m         Normal    Pulling             pod/nyx-api-5ddc9d474c-hmmv9         Pulling image "fabricioveronez/kube-news:v1"
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-gz7v2         Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-gz7v2         Error: ErrImagePull
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-hmmv9         Error: ErrImagePull
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-hmmv9         Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-hmmv9         Error: ImagePullBackOff
+13m         Warning   Failed              pod/nyx-api-5ddc9d474c-gz7v2         Error: ImagePullBackOff
+12m         Normal    SuccessfulCreate    replicaset/nyx-api-6bb9d659c5        Created pod: nyx-api-6bb9d659c5-jcz42
+12m         Normal    Scheduled           pod/nyx-api-6bb9d659c5-jcz42         Successfully assigned nyx-prod/nyx-api-6bb9d659c5-jcz42 to metacortex-lab-control-plane
+12m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-6bb9d659c5 to 1
+12m         Normal    Pulling             pod/nyx-api-6bb9d659c5-jcz42         Pulling image "fabricioveronez/kube-news:v1.0.0"
+12m         Normal    Pulled              pod/nyx-api-6bb9d659c5-jcz42         Successfully pulled image "fabricioveronez/kube-news:v1.0.0" in 8.878095727s (8.878220802s including waiting)
+11m         Normal    BackOff             pod/nyx-api-5ddc9d474c-gz7v2         Back-off pulling image "fabricioveronez/kube-news:v1"
+10m         Normal    BackOff             pod/nyx-api-5ddc9d474c-hmmv9         Back-off pulling image "fabricioveronez/kube-news:v1"
+10m         Normal    Created             pod/nyx-api-6bb9d659c5-jcz42         Created container api
+10m         Normal    Started             pod/nyx-api-6bb9d659c5-jcz42         Started container api
+10m         Normal    Pulled              pod/nyx-api-6bb9d659c5-jcz42         Container image "fabricioveronez/kube-news:v1.0.0" already present on machine
+9m18s       Normal    SuccessfulCreate    replicaset/nyx-api-6bb9d659c5        Created pod: nyx-api-6bb9d659c5-fzv86
+9m18s       Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-6bb9d659c5 to 2 from 1
+9m18s       Normal    Scheduled           pod/nyx-api-6bb9d659c5-fzv86         Successfully assigned nyx-prod/nyx-api-6bb9d659c5-fzv86 to metacortex-lab-control-plane
+7m47s       Normal    Created             pod/nyx-api-6bb9d659c5-fzv86         Created container api
+7m47s       Normal    Pulled              pod/nyx-api-6bb9d659c5-fzv86         Container image "fabricioveronez/kube-news:v1.0.0" already present on machine
+7m46s       Normal    Started             pod/nyx-api-6bb9d659c5-fzv86         Started container api
+2m57s       Warning   BackOff             pod/nyx-api-6bb9d659c5-jcz42         Back-off restarting failed container api in pod nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)
+6s          Warning   BackOff             pod/nyx-api-6bb9d659c5-fzv86         Back-off restarting failed container api in pod nyx-api-6bb9d659c5-fzv86_nyx-prod(4b138a11-89e6-4453-b677-96dc88db3b71)

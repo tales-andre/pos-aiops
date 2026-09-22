@@ -1,0 +1,78 @@
+### service/nyx-api -o yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"nyx-api","namespace":"nyx-stg"},"spec":{"ports":[{"port":80,"targetPort":8080}],"selector":{"app":"nyx-api"}}}
+  creationTimestamp: "2026-09-22T12:01:45Z"
+  name: nyx-api
+  namespace: nyx-stg
+  resourceVersion: "705"
+  uid: 690a4201-ad5b-4c7f-b42b-e30bc2a6ecc8
+spec:
+  clusterIP: 10.96.16.24
+  clusterIPs:
+  - 10.96.16.24
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: nyx-api
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+### deployment/nyx-api selector + template labels + ports
+{"matchLabels":{"app":"nyxapi"}}
+{"app":"nyxapi"}
+[{"containerPort":8080,"protocol":"TCP"}]
+
+### deployment/nyx-api conditions
+Available=True MinimumReplicasAvailable: Deployment has minimum availability.
+Progressing=True NewReplicaSetAvailable: ReplicaSet "nyx-api-69695bc4d6" has successfully progressed.
+
+### endpointslice nyx-api-57cfn -o yaml
+addressType: IPv4
+apiVersion: discovery.k8s.io/v1
+endpoints: null
+kind: EndpointSlice
+metadata:
+  annotations:
+    endpoints.kubernetes.io/last-change-trigger-time: "2026-09-22T12:01:45Z"
+  creationTimestamp: "2026-09-22T12:01:45Z"
+  generateName: nyx-api-
+  generation: 1
+  labels:
+    endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+    kubernetes.io/service-name: nyx-api
+  name: nyx-api-57cfn
+  namespace: nyx-stg
+  ownerReferences:
+  - apiVersion: v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Service
+    name: nyx-api
+    uid: 690a4201-ad5b-4c7f-b42b-e30bc2a6ecc8
+  resourceVersion: "709"
+  uid: 4b05fae7-364e-4ac1-a546-61d1af1bb7cf
+ports: null
+
+### endpoints nyx-api -o yaml (campo subsets)
+apiVersion: v1
+kind: Endpoints
+metadata:
+  annotations:
+    endpoints.kubernetes.io/last-change-trigger-time: "2026-09-22T12:01:45Z"
+  creationTimestamp: "2026-09-22T12:01:45Z"
+  name: nyx-api
+  namespace: nyx-stg
+  resourceVersion: "708"
+  uid: a51074d9-19ba-4037-a13b-e31ff8f09bdf

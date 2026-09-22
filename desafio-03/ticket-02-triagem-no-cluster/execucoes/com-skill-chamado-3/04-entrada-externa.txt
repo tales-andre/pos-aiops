@@ -1,0 +1,34 @@
+### ingress em todo o cluster
+No resources found
+
+### services do tipo NodePort/LoadBalancer no cluster
+(nenhum)
+
+### namespaces
+NAME                 STATUS   AGE
+default              Active   16m
+kube-node-lease      Active   16m
+kube-public          Active   16m
+kube-system          Active   16m
+local-path-storage   Active   15m
+nyx-prod             Active   14m
+nyx-stg              Active   14m
+orion-stg            Active   14m
+
+### describe svc nyx-api
+Name:                     nyx-api
+Namespace:                nyx-stg
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=nyx-api
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.96.16.24
+IPs:                      10.96.16.24
+Port:                     <unset>  80/TCP
+TargetPort:               8080/TCP
+Endpoints:                
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>

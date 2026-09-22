@@ -1,0 +1,72 @@
+$ kubectl get all -n nyx-stg -o wide
+NAME                                READY   STATUS    RESTARTS   AGE   IP            NODE                           NOMINATED NODE   READINESS GATES
+pod/nyx-api-69695bc4d6-4927k        1/1     Running   0          10m   10.244.0.16   metacortex-lab-control-plane   <none>           <none>
+pod/nyx-api-69695bc4d6-j882k        1/1     Running   0          10m   10.244.0.17   metacortex-lab-control-plane   <none>           <none>
+pod/nyx-postgres-5c64c56fc4-dp6zk   1/1     Running   0          14m   10.244.0.12   metacortex-lab-control-plane   <none>           <none>
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE   SELECTOR
+service/nyx-api        ClusterIP   10.96.16.24     <none>        80/TCP     14m   app=nyx-api
+service/nyx-postgres   ClusterIP   10.96.106.165   <none>        5432/TCP   14m   app=nyx-postgres
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                             SELECTOR
+deployment.apps/nyx-api        2/2     2            2           14m   api          fabricioveronez/kube-news:v1.0.0   app=nyxapi
+deployment.apps/nyx-postgres   1/1     1            1           14m   postgres     postgres:16-alpine                 app=nyx-postgres
+
+NAME                                      DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                             SELECTOR
+replicaset.apps/nyx-api-69695bc4d6        2         2         2       10m   api          fabricioveronez/kube-news:v1.0.0   app=nyxapi,pod-template-hash=69695bc4d6
+replicaset.apps/nyx-api-75b85c8454        0         0         0       14m   api          fabricioveronez/kube-news:v1       app=nyxapi,pod-template-hash=75b85c8454
+replicaset.apps/nyx-postgres-5c64c56fc4   1         1         1       14m   postgres     postgres:16-alpine                 app=nyx-postgres,pod-template-hash=5c64c56fc4
+
+$ kubectl get ingress,endpoints,endpointslices,networkpolicy,configmap,secret -n nyx-stg
+NAME                     ENDPOINTS          AGE
+endpoints/nyx-api        <none>             14m
+endpoints/nyx-postgres   10.244.0.12:5432   14m
+
+NAME                                                ADDRESSTYPE   PORTS     ENDPOINTS     AGE
+endpointslice.discovery.k8s.io/nyx-api-57cfn        IPv4          <unset>   <unset>       14m
+endpointslice.discovery.k8s.io/nyx-postgres-n5l59   IPv4          5432      10.244.0.12   14m
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      14m
+
+$ kubectl get events -n nyx-stg --sort-by=.lastTimestamp
+LAST SEEN   TYPE      REASON              OBJECT                               MESSAGE
+14m         Normal    Scheduled           pod/nyx-api-75b85c8454-vhqps         Successfully assigned nyx-stg/nyx-api-75b85c8454-vhqps to metacortex-lab-control-plane
+14m         Normal    ScalingReplicaSet   deployment/nyx-postgres              Scaled up replica set nyx-postgres-5c64c56fc4 to 1
+14m         Normal    SuccessfulCreate    replicaset/nyx-postgres-5c64c56fc4   Created pod: nyx-postgres-5c64c56fc4-dp6zk
+14m         Normal    Pulling             pod/nyx-postgres-5c64c56fc4-dp6zk    Pulling image "postgres:16-alpine"
+14m         Normal    Scheduled           pod/nyx-postgres-5c64c56fc4-dp6zk    Successfully assigned nyx-stg/nyx-postgres-5c64c56fc4-dp6zk to metacortex-lab-control-plane
+14m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-75b85c8454 to 2
+14m         Normal    SuccessfulCreate    replicaset/nyx-api-75b85c8454        Created pod: nyx-api-75b85c8454-tf9zg
+14m         Normal    SuccessfulCreate    replicaset/nyx-api-75b85c8454        Created pod: nyx-api-75b85c8454-vhqps
+14m         Normal    Scheduled           pod/nyx-api-75b85c8454-tf9zg         Successfully assigned nyx-stg/nyx-api-75b85c8454-tf9zg to metacortex-lab-control-plane
+13m         Normal    Started             pod/nyx-postgres-5c64c56fc4-dp6zk    Started container postgres
+13m         Normal    Created             pod/nyx-postgres-5c64c56fc4-dp6zk    Created container postgres
+13m         Normal    Pulled              pod/nyx-postgres-5c64c56fc4-dp6zk    Successfully pulled image "postgres:16-alpine" in 894.854014ms (23.774338207s including waiting)
+12m         Normal    Pulling             pod/nyx-api-75b85c8454-vhqps         Pulling image "fabricioveronez/kube-news:v1"
+12m         Normal    Pulling             pod/nyx-api-75b85c8454-tf9zg         Pulling image "fabricioveronez/kube-news:v1"
+12m         Warning   Failed              pod/nyx-api-75b85c8454-vhqps         Error: ErrImagePull
+12m         Warning   Failed              pod/nyx-api-75b85c8454-vhqps         Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+12m         Warning   Failed              pod/nyx-api-75b85c8454-tf9zg         Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+12m         Warning   Failed              pod/nyx-api-75b85c8454-tf9zg         Error: ErrImagePull
+12m         Warning   Failed              pod/nyx-api-75b85c8454-vhqps         Error: ImagePullBackOff
+12m         Warning   Failed              pod/nyx-api-75b85c8454-tf9zg         Error: ImagePullBackOff
+11m         Normal    BackOff             pod/nyx-api-75b85c8454-vhqps         Back-off pulling image "fabricioveronez/kube-news:v1"
+11m         Normal    BackOff             pod/nyx-api-75b85c8454-tf9zg         Back-off pulling image "fabricioveronez/kube-news:v1"
+10m         Normal    Scheduled           pod/nyx-api-69695bc4d6-4927k         Successfully assigned nyx-stg/nyx-api-69695bc4d6-4927k to metacortex-lab-control-plane
+10m         Normal    SuccessfulCreate    replicaset/nyx-api-69695bc4d6        Created pod: nyx-api-69695bc4d6-4927k
+10m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-69695bc4d6 to 1
+10m         Normal    Pulling             pod/nyx-api-69695bc4d6-4927k         Pulling image "fabricioveronez/kube-news:v1.0.0"
+10m         Normal    Started             pod/nyx-api-69695bc4d6-4927k         Started container api
+10m         Normal    Pulled              pod/nyx-api-69695bc4d6-4927k         Successfully pulled image "fabricioveronez/kube-news:v1.0.0" in 894.040436ms (9.52381679s including waiting)
+10m         Normal    Created             pod/nyx-api-69695bc4d6-4927k         Created container api
+10m         Normal    SuccessfulDelete    replicaset/nyx-api-75b85c8454        Deleted pod: nyx-api-75b85c8454-vhqps
+10m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled up replica set nyx-api-69695bc4d6 to 2 from 1
+10m         Normal    Created             pod/nyx-api-69695bc4d6-j882k         Created container api
+10m         Normal    Pulled              pod/nyx-api-69695bc4d6-j882k         Container image "fabricioveronez/kube-news:v1.0.0" already present on machine
+10m         Normal    Scheduled           pod/nyx-api-69695bc4d6-j882k         Successfully assigned nyx-stg/nyx-api-69695bc4d6-j882k to metacortex-lab-control-plane
+10m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled down replica set nyx-api-75b85c8454 to 1 from 2
+10m         Normal    Started             pod/nyx-api-69695bc4d6-j882k         Started container api
+10m         Normal    SuccessfulCreate    replicaset/nyx-api-69695bc4d6        Created pod: nyx-api-69695bc4d6-j882k
+10m         Normal    ScalingReplicaSet   deployment/nyx-api                   Scaled down replica set nyx-api-75b85c8454 to 0 from 1
+10m         Normal    SuccessfulDelete    replicaset/nyx-api-75b85c8454        Deleted pod: nyx-api-75b85c8454-tf9zg

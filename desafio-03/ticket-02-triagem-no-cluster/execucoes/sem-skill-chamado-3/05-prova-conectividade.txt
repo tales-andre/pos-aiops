@@ -1,0 +1,100 @@
+=== Pod alvo: nyx-api-69695bc4d6-4927k ===
+
+--- A) Chamada ATRAVES do Service (proxy do apiserver p/ svc nyx-api:80) ---
+$ kubectl get --raw /api/v1/namespaces/nyx-stg/services/nyx-api:80/proxy/
+Error from server (ServiceUnavailable): no endpoints available for service "nyx-api"
+exit=1
+
+--- B) Chamada DIRETA no Pod (proxy do apiserver p/ pod:8080) ---
+$ kubectl get --raw /api/v1/namespaces/nyx-stg/pods/nyx-api-69695bc4d6-4927k:8080/proxy/ | head -c 400
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kubenews</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;
+exit=0
+
+--- C) Readiness endpoint direto no Pod ---
+$ kubectl get --raw /api/v1/namespaces/nyx-stg/pods/nyx-api-69695bc4d6-4927k:8080/proxy/ready
+Ok
+
+--- D) Health endpoint direto no Pod ---
+$ kubectl get --raw /api/v1/namespaces/nyx-stg/pods/nyx-api-69695bc4d6-4927k:8080/proxy/health
+{"state":"up","machine":"nyx-api-69695bc4d6-4927k"}
+
+--- E) EndpointSlice do Service nyx-api ---
+$ kubectl get endpointslice -n nyx-stg -o yaml
+apiVersion: v1
+items:
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints: null
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2026-09-22T12:01:45Z"
+    creationTimestamp: "2026-09-22T12:01:45Z"
+    generateName: nyx-api-
+    generation: 1
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: nyx-api
+    name: nyx-api-57cfn
+    namespace: nyx-stg
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: nyx-api
+      uid: 690a4201-ad5b-4c7f-b42b-e30bc2a6ecc8
+    resourceVersion: "709"
+    uid: 4b05fae7-364e-4ac1-a546-61d1af1bb7cf
+  ports: null
+- addressType: IPv4
+  apiVersion: discovery.k8s.io/v1
+  endpoints:
+  - addresses:
+    - 10.244.0.12
+    conditions:
+      ready: true
+      serving: true
+      terminating: false
+    nodeName: metacortex-lab-control-plane
+    targetRef:
+      kind: Pod
+      name: nyx-postgres-5c64c56fc4-dp6zk
+      namespace: nyx-stg
+      uid: 5d978852-1e81-43b4-b4d4-17998c515670
+  kind: EndpointSlice
+  metadata:
+    annotations:
+      endpoints.kubernetes.io/last-change-trigger-time: "2026-09-22T12:02:07Z"
+    creationTimestamp: "2026-09-22T12:01:45Z"
+    generateName: nyx-postgres-
+    generation: 2
+    labels:
+      endpointslice.kubernetes.io/managed-by: endpointslice-controller.k8s.io
+      kubernetes.io/service-name: nyx-postgres
+    name: nyx-postgres-n5l59
+    namespace: nyx-stg
+    ownerReferences:
+    - apiVersion: v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Service
+      name: nyx-postgres
+      uid: 8134e131-9fdb-45fb-85d0-867439fc53b8
+    resourceVersion: "813"
+    uid: 268246e8-6838-49bc-ad67-a263b44757db
+  ports:
+  - name: ""
+    port: 5432
+    protocol: TCP
+kind: List
+metadata:
+  resourceVersion: ""

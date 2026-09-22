@@ -1,0 +1,68 @@
+==============================================================
+ NAMESPACE: nyx-stg
+ coletado em: 2026-09-22T12:15:35Z
+==============================================================
+
+--- 1. WORKLOADS: prontos sobre desejados ---
+  nyx-api: 2/2 prontos
+  nyx-postgres: 1/1 prontos
+
+--- 2. PODS e ESTADO DO CONTAINER ---
+(a causa de reinicio vive aqui, nao nos eventos)
+
+  pod nyx-api-69695bc4d6-4927k  fase=Running
+    rotulos: {'app': 'nyxapi', 'pod-template-hash': '69695bc4d6'}
+    container api  pronto=True  reinicios=0
+
+  pod nyx-api-69695bc4d6-j882k  fase=Running
+    rotulos: {'app': 'nyxapi', 'pod-template-hash': '69695bc4d6'}
+    container api  pronto=True  reinicios=0
+
+  pod nyx-postgres-5c64c56fc4-dp6zk  fase=Running
+    rotulos: {'app': 'nyx-postgres', 'pod-template-hash': '5c64c56fc4'}
+    container postgres  pronto=True  reinicios=0
+
+--- 3. RECURSOS DECLARADOS ---
+(compare com a causa da morte: OOMKilled aponta para limits.memory)
+  api: SEM requests/limits
+  postgres: SEM requests/limits
+
+--- 4. EVENTOS ---
+(Warning primeiro; nem toda causa aparece aqui)
+  Warning Failed  nyx-api-75b85c8454-vhqps
+    Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+  Warning Failed  nyx-api-75b85c8454-vhqps
+    Error: ErrImagePull
+  Warning Failed  nyx-api-75b85c8454-tf9zg
+    Failed to pull image "fabricioveronez/kube-news:v1": rpc error: code = NotFound desc = failed to pull and unpack image "docker.io/fabricioveronez/kube-news:v1": no match for platform in manifest: not found
+  Warning Failed  nyx-api-75b85c8454-tf9zg
+    Error: ErrImagePull
+  Warning Failed  nyx-api-75b85c8454-vhqps
+    Error: ImagePullBackOff
+  Warning Failed  nyx-api-75b85c8454-tf9zg
+    Error: ImagePullBackOff
+
+--- 5. REDE: Service, Endpoints e coerencia do selector ---
+(campo de enderecos AUSENTE e diferente de lista vazia)
+
+  service nyx-api  tipo=ClusterIP  selector={'app': 'nyx-api'}
+    NENHUM pod casa com o selector -> Service sem endpoint
+      candidato nyx-api-69695bc4d6-4927k tem rotulos {'app': 'nyxapi', 'pod-template-hash': '69695bc4d6'}
+      candidato nyx-api-69695bc4d6-j882k tem rotulos {'app': 'nyxapi', 'pod-template-hash': '69695bc4d6'}
+      candidato nyx-postgres-5c64c56fc4-dp6zk tem rotulos {'app': 'nyx-postgres', 'pod-template-hash': '5c64c56fc4'}
+
+  service nyx-postgres  tipo=ClusterIP  selector={'app': 'nyx-postgres'}
+    1 pod(s) casam com o selector
+
+  endpoints nyx-api: SEM o campo de enderecos
+  endpoints nyx-postgres: 1 endereco(s)
+
+--- 6. O QUE ESTA SAUDAVEL AO LADO ---
+(triagem se distingue de chute por saber o que NAO quebrou)
+  ok: nyx-api-69695bc4d6-4927k
+  ok: nyx-api-69695bc4d6-j882k
+  ok: nyx-postgres-5c64c56fc4-dp6zk
+
+==============================================================
+ fim do retrato. nenhuma escrita foi feita no cluster.
+==============================================================

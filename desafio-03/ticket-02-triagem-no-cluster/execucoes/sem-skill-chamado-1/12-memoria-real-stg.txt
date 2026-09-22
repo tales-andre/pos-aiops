@@ -1,0 +1,11 @@
+# MEDICAO: consumo real de memoria do MESMO container em nyx-stg (cgroup), em regime estavel
+# coletado em: 2026-09-22T09:17:28-03:00
+# kubectl top nao esta disponivel neste cluster (sem metrics-server) - ver abaixo
+-----
+$ kubectl top pods -n nyx-prod
+error: Metrics API not available
+
+pod nyx-stg/nyx-api-69695bc4d6-4927k -> memory.current = 35909632 bytes = 34.2 MiB
+pod nyx-stg/nyx-api-69695bc4d6-j882k -> memory.current = 35323904 bytes = 33.7 MiB
+
+Limite configurado em nyx-prod: 24Mi = 25165824 bytes
