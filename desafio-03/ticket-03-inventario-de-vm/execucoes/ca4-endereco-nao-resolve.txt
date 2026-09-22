@@ -1,0 +1,11 @@
+# CA4 — endereco errado (nao resolve)
+
+stderr:
+  nao foi possivel inventariar host-que-nao-existe.invalid: o endereco informado nao resolve
+
+rc=3   (esperado: 3)
+
+Sem stack trace (nenhum 'Traceback'), sem relatorio de conformidade na saida
+padrao, e o codigo NAO e 0: 'nao consegui olhar' nao e 'esta tudo bem'.
+
+Verificado: 'Traceback' nao aparece na saida.

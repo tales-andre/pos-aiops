@@ -1,0 +1,13 @@
+# CA1 — host conforme
+
+Baseline usado: execucoes/baselines/baseline-conforme.yaml (padrao declarado que
+este host satisfaz). A coleta e a mesma do CA2; o que muda e o padrao, nunca o host.
+
+$ ./inventario --host localhost --usuario tales --chave <caminho> --baseline baseline-conforme.yaml
+rc=0   (esperado: 0)
+
+Contagem de vereditos:
+  {'conforme': 10, 'desvio': 0, 'nao_verificado': 1, 'por_severidade': {}}
+
+Observe que ssh.login_de_root continua nao_verificado e AINDA ASSIM o codigo e 0:
+nao_verificado sozinho nao promove o codigo de saida.

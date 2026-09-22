@@ -1,0 +1,33 @@
+# Codigo de saida 4 — erro de uso
+
+Nenhum destes cenarios abre conexao SSH: o problema esta na invocacao ou na
+maquina de quem opera, nao no host alvo.
+
+## baseline-ausente
+```
+$ ./inventario --host localhost --usuario tales --chave /home/tales/.ssh/inventario_ed25519
+erro de uso: the following arguments are required: --baseline
+rc=4
+```
+
+## baseline-inexistente
+```
+$ ./inventario --host localhost --usuario tales --chave /home/tales/.ssh/inventario_ed25519 --baseline /nao/existe.yaml
+erro de uso: baseline nao encontrado: /nao/existe.yaml
+rc=4
+```
+
+## formato-invalido
+```
+$ ./inventario --host localhost --usuario tales --chave /home/tales/.ssh/inventario_ed25519 --baseline /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/baseline.yaml --formato xml
+erro de uso: formato invalido: 'xml' (use json, markdown ou ambos)
+rc=4
+```
+
+## chave-inexistente
+```
+$ ./inventario --host localhost --usuario tales --chave /nao/existe.key --baseline /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/baseline.yaml
+erro de uso: chave privada nao encontrada: /nao/existe.key
+rc=4
+```
+

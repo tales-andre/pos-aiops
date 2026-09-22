@@ -1,0 +1,30 @@
+# CA2 e CA3 — execucao real contra o baseline do parque
+
+Os dois arquivos abaixo saem da MESMA execucao (--formato ambos), o que e a
+prova de que os dois renderizadores estao sobre um unico modelo em memoria.
+
+$ ./inventario --host localhost --usuario tales --chave <caminho> --baseline baseline.yaml --formato ambos --saida execucoes/
+rc=1   (esperado: 1 — ha desvio critico)
+
+## CA2 — cada desvio classificado pela severidade que o baseline atribui
+
+  servicos.ativos                        severidade=alto
+  swap.habilitado                        severidade=critico
+  portas_em_escuta.publicas_permitidas   severidade=critico
+  chaves_ssh.emitidas_por                severidade=critico
+
+  resumo: {"conforme": 6, "desvio": 4, "nao_verificado": 1, "por_severidade": {"alto": 1, "critico": 3}}
+
+## CA3 — regra nao verificavel aparece como nao_verificado nos DOIS formatos
+
+JSON:
+  {"encontrado": null, "esperado": false, "motivo": "exige privilegio que o usuario da coleta nao tem", "regra": "ssh.login_de_root", "veredito": "nao_verificado"}
+
+Markdown (secao propria, separada da secao Conforme):
+  ## Não verificado
+  
+  | Regra | Motivo |
+  |---|---|
+  | ssh.login_de_root | exige privilegio que o usuario da coleta nao tem |
+  
+  ## Conforme

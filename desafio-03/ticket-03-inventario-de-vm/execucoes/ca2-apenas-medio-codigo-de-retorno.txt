@@ -1,0 +1,11 @@
+# Codigo de saida 2 — ha desvio apenas de severidade medio
+
+Baseline usado: execucoes/baselines/baseline-somente-medio.yaml, identico ao
+baseline-conforme exceto por kernel.versao_minima elevada a 9.9.
+
+rc=2   (esperado: 2)
+
+  kernel.versao_minima                   severidade=medio  encontrado=6.6.87.2-microsoft-standard-WSL2
+
+A MESMA regra kernel.versao_minima saiu conforme no CA1 e desvio aqui, sem que
+uma linha de codigo mudasse: a politica esta no baseline, nao na ferramenta.

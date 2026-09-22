@@ -1,0 +1,56 @@
+# CA6 — a chave privada nao aparece em nenhuma saida nem em mensagem de erro
+
+## 1. Busca do material da chave em todos os artefatos gerados
+
+Cada linha de base64 do arquivo da chave privada e procurada, literalmente, em
+todo arquivo de execucoes/ e em todo arquivo de src/.
+
+  RESULTADO: nenhum trecho do material da chave foi encontrado. OK.
+
+## 2. Busca do cabecalho PEM nos relatorios e no codigo-fonte
+
+  Escopo: os relatorios gerados (execucoes/*.json, *.md, *.txt) e src/.
+  Este script gerador fica FORA do escopo de proposito: ele contem a palavra
+  'PRIVATE KEY' justamente porque e ele quem faz esta busca.
+
+  RESULTADO: 'PRIVATE KEY' nao aparece em nenhum relatorio nem no codigo. OK.
+
+## 3. Mensagem de erro do caminho de credencial recusada
+
+  stderr: nao foi possivel inventariar localhost: credencial recusada pelo host
+
+  Cita apenas o que aconteceu. Nenhum caminho de chave, nenhum material.
+
+## 4. A camada de saneamento (design D10), exercitada com a chave de verdade
+
+  Uma mensagem de erro e construida DE PROPOSITO contendo o conteudo integral do
+  arquivo da chave privada, e passada por erros.sanear(). O que sai e isto:
+
+    falha ao autenticar usando a chave:
+    [conteudo de chave removido]
+    fim da mensagem
+    
+    [verificado: nem o cabecalho PEM nem qualquer linha do material sobreviveram]
+
+## 5. Como o invariante e sustentado na origem
+
+  A primeira camada nao e o saneamento: e o fato de a ferramenta NUNCA abrir o
+  arquivo da chave. O que ela faz e passar o CAMINHO para o cliente ssh do
+  sistema (decisao D1), que e quem sabe manuseá-lo.
+
+  Inventario completo dos open() do codigo-fonte — sao dois, e nenhum e a chave:
+
+    /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/src/inventario/baseline.py:48:        with open(caminho, "r", encoding="utf-8") as arquivo:
+    /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/src/inventario/cli.py:144:        with open(caminho, "w", encoding="utf-8") as arquivo:
+
+    baseline.py -> abre o baseline.yaml   (argumento --baseline)
+    cli.py      -> grava o relatorio      (argumento --saida)
+
+  O caminho da chave so aparece como elemento da lista de argumentos do
+  subprocesso ssh, em transporte.py:
+
+    75:    def __init__(self, host, usuario, caminho_da_chave):
+    78:        self.caminho_da_chave = caminho_da_chave
+    96:            "-i", self.caminho_da_chave,
+    104:        if not os.path.isfile(self.caminho_da_chave):
+    105:            raise ErroDeUso("chave privada nao encontrada: %s" % self.caminho_da_chave)

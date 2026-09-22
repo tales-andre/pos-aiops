@@ -1,0 +1,25 @@
+# CA5 — duas execucoes consecutivas, so coletado_em muda
+
+$ ./inventario ... --formato json --saida r1/   -> rc=1
+$ ./inventario ... --formato json --saida r2/   -> rc=1
+
+$ diff -u ca5-execucao-1.json ca5-execucao-2.json
+--------------------------------------------------------------
+--- /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/execucoes/ca5-execucao-1.json	2026-09-22 16:14:51.954962814 -0300
++++ /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-03-inventario-de-vm/execucoes/ca5-execucao-2.json	2026-09-22 16:14:51.954962814 -0300
+@@ -94,7 +94,7 @@
+     }
+   ],
+   "host": {
+-    "coletado_em": "2026-09-22T19:14:49Z",
++    "coletado_em": "2026-09-22T19:14:51Z",
+     "endereco": "localhost",
+     "hostname": "DESKTOPDEVOPS"
+   },
+--------------------------------------------------------------
+
+Linhas alteradas no total: 2
+Linhas alteradas que sao host.coletado_em: 2
+
+VEREDITO: toda diferenca entre as duas execucoes esta em host.coletado_em.
+O invariante I1 (so leitura) se sustenta: a ferramenta nao alterou o host.

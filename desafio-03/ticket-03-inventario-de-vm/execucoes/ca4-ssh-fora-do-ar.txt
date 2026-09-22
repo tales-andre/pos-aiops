@@ -1,0 +1,11 @@
+# CA4 (complemento) — servico SSH fora do ar
+
+O sshd da maquina de teste foi parado, a ferramenta foi executada, e o sshd foi
+religado em seguida. E o unico cenario que nao da para produzir sem mexer no host.
+
+stderr:
+  nao foi possivel inventariar 127.0.0.1: o host respondeu, mas o servico SSH esta fora do ar (conexao recusada)
+
+rc=3   (esperado: 3)
+
+Reposicao do servico verificada apos o teste: ssh respondeu 'ok'

@@ -1,0 +1,830 @@
+{
+  "conformidade": [
+    {
+      "encontrado": "ubuntu",
+      "esperado": "ubuntu",
+      "regra": "so.distribuicao",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": "24.04",
+      "esperado": "22.04",
+      "regra": "so.versao_minima",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": "6.6.87.2-microsoft-standard-WSL2",
+      "esperado": "9.9",
+      "regra": "kernel.versao_minima",
+      "severidade": "medio",
+      "veredito": "desvio"
+    },
+    {
+      "encontrado": [
+        "ssh: active",
+        "containerd: active"
+      ],
+      "esperado": [
+        "ssh",
+        "containerd"
+      ],
+      "regra": "servicos.ativos",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": [],
+      "esperado": [
+        "telnet.socket",
+        "rpcbind.socket"
+      ],
+      "regra": "servicos.proibidos",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": true,
+      "esperado": true,
+      "regra": "swap.habilitado",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": [],
+      "esperado": [
+        22,
+        4369
+      ],
+      "regra": "portas_em_escuta.publicas_permitidas",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": [],
+      "esperado": [
+        9100
+      ],
+      "regra": "portas_em_escuta.somente_rede_interna",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": [
+        "inventario-metacortex"
+      ],
+      "esperado": "inventario-metacortex",
+      "regra": "chaves_ssh.emitidas_por",
+      "veredito": "conforme"
+    },
+    {
+      "encontrado": null,
+      "esperado": false,
+      "motivo": "exige privilegio que o usuario da coleta nao tem",
+      "regra": "ssh.login_de_root",
+      "veredito": "nao_verificado"
+    },
+    {
+      "encontrado": true,
+      "esperado": true,
+      "regra": "ntp.sincronizado",
+      "veredito": "conforme"
+    }
+  ],
+  "host": {
+    "coletado_em": "2026-09-22T19:14:38Z",
+    "endereco": "localhost",
+    "hostname": "DESKTOPDEVOPS"
+  },
+  "inventario": {
+    "chaves_ssh": [
+      {
+        "identificacao": "inventario-metacortex"
+      }
+    ],
+    "kernel": {
+      "versao": "6.6.87.2-microsoft-standard-WSL2"
+    },
+    "ntp": {
+      "mecanismo": "systemd-timesyncd",
+      "sincronizado": true
+    },
+    "portas_em_escuta": [
+      {
+        "bind": "0.0.0.0",
+        "porta": 22,
+        "processo": null
+      },
+      {
+        "bind": "::",
+        "porta": 22,
+        "processo": null
+      },
+      {
+        "bind": "10.255.255.254",
+        "porta": 53,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.53",
+        "porta": 53,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.54",
+        "porta": 53,
+        "processo": null
+      },
+      {
+        "bind": "*",
+        "porta": 4369,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.1",
+        "porta": 11434,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.1",
+        "porta": 30464,
+        "processo": "node"
+      },
+      {
+        "bind": "127.0.0.1",
+        "porta": 36355,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.1",
+        "porta": 40723,
+        "processo": null
+      },
+      {
+        "bind": "127.0.0.1",
+        "porta": 42731,
+        "processo": "node"
+      }
+    ],
+    "servicos": [
+      {
+        "estado": "inactive",
+        "nome": "apparmor.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "apport-autoreport.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "apport-forward.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "apport.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "apt-daily-upgrade.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "apt-daily.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "console-getty.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "console-setup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "containerd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "cron.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "dbus.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "dbus.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "dmesg.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "docker.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "docker.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "dpkg-db-backup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "e2scrub_all.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "e2scrub_reap.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "emergency.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "epmd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "epmd.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "fstrim.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "getty-static.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "getty@tty1.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "initrd-cleanup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "initrd-parse-etc.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "initrd-switch-root.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "initrd-udevadm-cleanup-db.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "keyboard-setup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "kmod-static-nodes.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "landscape-client.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "ldconfig.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "logrotate.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "man-db.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@configfs.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@dm_mod.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@drm.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@efi_pstore.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@fuse.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "modprobe@loop.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "motd-news.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "netplan-ovs-cleanup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "networkd-dispatcher.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "ollama.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "polkit.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "rc-local.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "rescue.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "rsyslog.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "setvtrgb.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.apparmor.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.autoimport.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.core-fixup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.failure.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.recovery-chooser-trigger.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "snapd.seeded.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "snapd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.snap-repair.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "snapd.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "snapd.system-shutdown.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "ssh.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "ssh.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "syslog.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-ask-password-console.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-ask-password-wall.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-battery-check.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-binfmt.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-bsod.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-firstboot.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-fsck-root.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-fsckd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-fsckd.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-hibernate-resume.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-hwdb-update.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-initctl.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-initctl.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-journal-catalog-update.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-journal-flush.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-journald-audit.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-journald-dev-log.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-journald.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-journald.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-logind.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-machine-id-commit.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-modules-load.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-networkd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-networkd.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pcrextend.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pcrmachine.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pcrphase-initrd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pcrphase-sysinit.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pcrphase.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-pstore.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-random-seed.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-remount-fs.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-repart.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-resolved.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-soft-reboot.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-sysctl.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-sysext.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-sysext.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-sysusers.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-timedated.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-timesyncd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-tmpfiles-clean.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-tmpfiles-setup-dev-early.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-tmpfiles-setup-dev.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-tmpfiles-setup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-tpm2-setup-early.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-tpm2-setup.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-udev-settle.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-udev-trigger.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-udevd-control.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-udevd-kernel.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-udevd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-update-done.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "systemd-update-utmp-runlevel.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-update-utmp.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "systemd-user-sessions.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "ua-reboot-cmds.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "ua-timer.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "ubuntu-advantage.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "ubuntu-fan.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "unattended-upgrades.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "user-runtime-dir@1000.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "user@1000.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "uuidd.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "active",
+        "nome": "uuidd.socket",
+        "tipo": "socket"
+      },
+      {
+        "estado": "active",
+        "nome": "wsl-pro.service",
+        "tipo": "service"
+      },
+      {
+        "estado": "inactive",
+        "nome": "wslg.service",
+        "tipo": "service"
+      }
+    ],
+    "so": {
+      "distribuicao": "ubuntu",
+      "versao": "24.04"
+    },
+    "ssh": {
+      "login_de_root": null
+    },
+    "swap": {
+      "habilitado": true,
+      "tamanho": "2G"
+    }
+  },
+  "resumo": {
+    "conforme": 9,
+    "desvio": 1,
+    "nao_verificado": 1,
+    "por_severidade": {
+      "medio": 1
+    }
+  }
+}

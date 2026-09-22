@@ -1,0 +1,39 @@
+# baseline-somente-medio.yaml — padrao declarado que ESTE host viola em UMA regra so,
+# e essa regra e classificada como `medio`.
+#
+# Existe para provar a linha `2` da tabela de codigo de saida ("ha desvio apenas de
+# severidade medio"), que nenhum dos outros cenarios exercita. Identico ao
+# baseline-conforme, exceto por `kernel.versao_minima`, elevado a uma versao que o host
+# nao alcanca.
+#
+# Prova de tabela, junto com baseline-conforme.yaml: a MESMA regra, no MESMO host, muda
+# de veredito e de severidade so porque o baseline mudou -- nenhuma linha de codigo foi
+# tocada entre as duas execucoes.
+versao: "1-somente-medio"
+aplica_a: host-de-teste-wsl
+esperado:
+  so:
+    distribuicao: ubuntu
+    versao_minima: "22.04"
+  kernel:
+    versao_minima: "9.9"
+  servicos:
+    ativos: [ssh, containerd]
+    proibidos: [telnet.socket, rpcbind.socket]
+  swap:
+    habilitado: true
+  portas_em_escuta:
+    publicas_permitidas: [22, 4369]
+    somente_rede_interna: [9100]
+  chaves_ssh:
+    emitidas_por: inventario-metacortex
+  ssh:
+    login_de_root: false
+  ntp:
+    sincronizado: true
+severidade:
+  critico: [swap.habilitado, chaves_ssh.emitidas_por,
+            portas_em_escuta.publicas_permitidas, portas_em_escuta.somente_rede_interna]
+  alto: [servicos.ativos, servicos.proibidos, ssh.login_de_root,
+         so.distribuicao, so.versao_minima]
+  medio: [kernel.versao_minima, ntp.sincronizado]

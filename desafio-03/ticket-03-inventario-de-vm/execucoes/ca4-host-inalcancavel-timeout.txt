@@ -1,0 +1,11 @@
+# CA4 — host inalcancavel (conexao expira)
+
+stderr:
+  nao foi possivel inventariar 192.0.2.1: host inalcancavel: a conexao expirou
+
+rc=3   (esperado: 3)
+
+Sem stack trace (nenhum 'Traceback'), sem relatorio de conformidade na saida
+padrao, e o codigo NAO e 0: 'nao consegui olhar' nao e 'esta tudo bem'.
+
+Verificado: 'Traceback' nao aparece na saida.
