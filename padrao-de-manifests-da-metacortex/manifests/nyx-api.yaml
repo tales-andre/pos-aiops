@@ -1,0 +1,156 @@
+# nyx-api — workload do cliente nyx, ambiente prod.
+#
+# Escrito contra o Padrão de Manifests da Metacortex. É o mesmo componente que
+# a wiki usa em todos os exemplos (nyx-api, nyx-prod, registry.metacortex.io/nyx/api).
+#
+# O Namespace não entra aqui: a regra 1.2 diz que quem cria é o Construct.
+# O Secret nyx-db também não: a regra 3.3 é `proibido` e segredo não se versiona
+# junto do manifesto.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nyx-api
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: nyx-api
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+  annotations:
+    metacortex.io/owner: plataforma
+# A aplicação não fala com o apiserver, então a SA existe sem RBAC nenhum (3.5)
+# e o token não é montado (3.4).
+automountServiceAccountToken: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nyx-api
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: nyx-api
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+  annotations:
+    metacortex.io/owner: plataforma
+    metacortex.io/runbook: https://wiki.metacortex.io/runbooks/nyx-api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nyx-api
+      app.kubernetes.io/instance: nyx-prod
+      app.kubernetes.io/part-of: nyx
+      app.kubernetes.io/managed-by: platform
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nyx-api
+        app.kubernetes.io/instance: nyx-prod
+        app.kubernetes.io/part-of: nyx
+        app.kubernetes.io/managed-by: platform
+    spec:
+      serviceAccountName: nyx-api
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        # Nome igual ao componente (1.6): quem lê log sabe o que é sem abrir o manifesto.
+        - name: api
+          # Tag imutável (3.1), registry interno (3.7).
+          image: registry.metacortex.io/nyx/api:2.9.1
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: nyx-postgres
+            - name: DB_DATABASE
+              value: kubedevnews
+            - name: DB_USERNAME
+              value: kubedevnews
+            # Regra 3.3 é `proibido`: nenhuma credencial em texto puro.
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nyx-db
+                  key: password
+          # Endpoints distintos, e nenhum dos dois consulta o banco — o que evita
+          # a cascata que a regra 2.2 descreve. Confirmado em src/system-life.js.
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          # Consumo observado: ~34 MiB em regime. A regra de bolso pede limits de
+          # memória entre 1,5x e 2x — 64Mi é 1,9x.
+          resources:
+            requests: {cpu: 100m, memory: 48Mi}
+            limits:   {cpu: 500m, memory: 64Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nyx-api
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: nyx-api
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+spec:
+  type: ClusterIP
+  # Regra 1.4: idêntico aos rótulos do template do pod, caractere por caractere.
+  selector:
+    app.kubernetes.io/name: nyx-api
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nyx-api
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: nyx-api
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nyx-api
+      app.kubernetes.io/instance: nyx-prod
+      app.kubernetes.io/part-of: nyx
+      app.kubernetes.io/managed-by: platform
