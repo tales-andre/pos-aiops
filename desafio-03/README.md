@@ -87,11 +87,6 @@ gerou**, o que fecha o laço entre as quatro entregas.
 
 ---
 
-## [Marketing pessoal](./marketing-pessoal.md)
-
-As três teses do enunciado, cada uma com a prova que os tickets produziram e o ponteiro para o
-artefato. O texto do post não está lá de propósito — a opinião é de quem assina.
-
 ## Como reproduzir o laboratório
 
 ```bash
