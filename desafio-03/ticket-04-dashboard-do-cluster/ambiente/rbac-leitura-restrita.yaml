@@ -1,0 +1,102 @@
+# Contexto de leitura restrita para validar o critério de aceite 7.
+#
+# Isto é PREPARAÇÃO DE AMBIENTE, não comportamento do dashboard: fabrica uma
+# credencial que consegue ler pods, deployments e eventos de nyx-prod, e NÃO
+# consegue ler services nem endpointslices. É o análogo de laboratório do
+# contexto `platform-ro` descrito no brainstorm.
+#
+# Aplicar apenas no cluster de laboratório kind-metacortex-lab.
+#
+# Nomenclatura e rótulos seguem o Padrão de Manifests da Metacortex
+# (1.1 kebab-case, 1.3 os quatro rótulos, 1.5 anotação de dono). As regras dos
+# blocos 2 e 3 são de container e não têm objeto em SA/Role/RoleBinding.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dashboard-leitura-restrita
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: dashboard-leitura-restrita
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+  annotations:
+    metacortex.io/owner: plataforma
+    metacortex.io/proposito: >-
+      credencial de laboratório para exercitar a degradação parcial do
+      dashboard do cluster (ticket 04)
+---
+# Cluster-scoped: o dashboard precisa listar namespaces para montar o filtro.
+# Sem isto o painel de namespaces também cairia, e o cenário deixaria de
+# demonstrar degradação PARCIAL.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: dashboard-leitura-restrita-namespaces
+  labels:
+    app.kubernetes.io/name: dashboard-leitura-restrita
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: dashboard-leitura-restrita-namespaces
+  labels:
+    app.kubernetes.io/name: dashboard-leitura-restrita
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+subjects:
+  - kind: ServiceAccount
+    name: dashboard-leitura-restrita
+    namespace: nyx-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: dashboard-leitura-restrita-namespaces
+---
+# Namespaced: pods, deployments e eventos SIM. services e endpointslices NÃO.
+# A ausência deliberada é o ponto do cenário.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: dashboard-leitura-restrita
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: dashboard-leitura-restrita
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: dashboard-leitura-restrita
+  namespace: nyx-prod
+  labels:
+    app.kubernetes.io/name: dashboard-leitura-restrita
+    app.kubernetes.io/instance: nyx-prod
+    app.kubernetes.io/part-of: nyx
+    app.kubernetes.io/managed-by: platform
+subjects:
+  - kind: ServiceAccount
+    name: dashboard-leitura-restrita
+    namespace: nyx-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: dashboard-leitura-restrita

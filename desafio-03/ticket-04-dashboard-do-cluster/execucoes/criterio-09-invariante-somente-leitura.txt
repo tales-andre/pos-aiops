@@ -1,0 +1,75 @@
+==============================================================
+CRITÉRIO 9 — nenhum caminho de código alcança verbo de escrita, verificável em um único ponto
+==============================================================
+gerado em : 2026-09-22T16:35:51-03:00
+comando   : python3 testes/test_invariante.py
+--------------------------------------------------------------
+
+### O PONTO ÚNICO — src/acesso.py:
+38:VERBOS_PERMITIDOS = frozenset({"get", "list", "watch"})
+259:def ler(verbo: str, recurso: str, chamada: Callable[..., Any], **kwargs: Any) -> Any:
+
+VERBOS_PERMITIDOS e `ler()`. É só isso. O teste `testes/test_invariante.py`
+garante que nenhum outro módulo de src/ importe o cliente do Kubernetes.
+"""
+
+from __future__ import annotations
+
+import os
+import socket
+import ssl
+from dataclasses import dataclass
+from typing import Any, Callable
+from urllib.error import URLError
+
+from kubernetes import client as k8s_client
+from kubernetes import config as k8s_config
+from kubernetes.client.exceptions import ApiException
+from kubernetes.config.config_exception import ConfigException
+
+# ---------------------------------------------------------------------------
+# O INVARIANTE
+# ---------------------------------------------------------------------------
+
+#: Conjunto COMPLETO de verbos que este projeto pode executar contra o apiserver.
+#: Todos são verbos de leitura. Nada aqui altera estado do cluster.
+#: Escrita (create, update, patch, delete, deletecollection, scale, exec,
+#: attach, portforward, eviction) é deliberadamente ausente e recusada em
+#: tempo de execução por `ler()`.
+VERBOS_PERMITIDOS = frozenset({"get", "list", "watch"})
+
+#: Timeout curto para qualquer conversa com o apiserver. Sem isto, um cluster
+#: fora do ar prende o servidor single-thread por minutos em vez de devolver
+#: uma mensagem clara (ver design.md, Risks).
+TIMEOUT_SEGUNDOS = 6
+
+### verificação mecânica:
+INVARIANTE DE SOMENTE-LEITURA — verificação mecânica
+============================================================
+  [OK]    apenas src/acesso.py importa o cliente kubernetes
+  [OK]    VERBOS_PERMITIDOS = ['get', 'list', 'watch'] (somente leitura)
+  [OK]    nenhum verbo de escrita está na lista de permitidos
+  [OK]    ler('create', ...) recusado antes de qualquer rede
+  [OK]    ler('update', ...) recusado antes de qualquer rede
+  [OK]    ler('patch', ...) recusado antes de qualquer rede
+  [OK]    ler('delete', ...) recusado antes de qualquer rede
+  [OK]    ler('deletecollection', ...) recusado antes de qualquer rede
+  [OK]    ler('scale', ...) recusado antes de qualquer rede
+  [OK]    ler('exec', ...) recusado antes de qualquer rede
+  [OK]    ler('attach', ...) recusado antes de qualquer rede
+  [OK]    ler('portforward', ...) recusado antes de qualquer rede
+  [OK]    ler('replace', ...) recusado antes de qualquer rede
+  [OK]    ler('apply', ...) recusado antes de qualquer rede
+  [OK]    ler('evict', ...) recusado antes de qualquer rede
+  [OK]    o servidor HTTP implementa apenas ['do_GET']
+============================================================
+16 verificações passaram, 0 falharam.
+  (código de saída: 0)
+
+### o servidor HTTP recusa qualquer método que não seja GET:
+  (subindo em 8703 só para esta prova)
+  POST  /  -> HTTP 501
+  PUT  /  -> HTTP 501
+  PATCH  /  -> HTTP 501
+  DELETE  /  -> HTTP 501
+  GET   /  -> HTTP 200

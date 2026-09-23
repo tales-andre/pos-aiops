@@ -1,0 +1,74 @@
+==============================================================
+CRITÉRIO 5 — Service sem endpoint é marcado como tal, distinto de erro de leitura
+==============================================================
+gerado em : 2026-09-22T16:35:48-03:00
+comando   : curl -s 'localhost:8700/api/snapshot?ns=nyx-stg' | .services
+--------------------------------------------------------------
+
+### nyx-stg: selector divergente, Service sem endpoint
+apiVersion: v1
+kind: Endpoints
+metadata:
+  annotations:
+    endpoints.kubernetes.io/last-change-trigger-time: "2026-09-22T12:01:45Z"
+  creationTimestamp: "2026-09-22T12:01:45Z"
+  name: nyx-api
+  namespace: nyx-stg
+  resourceVersion: "708"
+  uid: a51074d9-19ba-4037-a13b-e31ff8f09bdf
+
+### o campo de endereços NÃO vem vazio — ele não vem (EndpointSlice):
+null   <- vazio acima significa campo AUSENTE
+
+### o que o dashboard serve em nyx-stg (ok:true + sem_endpoint:true):
+{
+  "ok": true,
+  "recurso": "services",
+  "itens": [
+    {
+      "nome": "nyx-api",
+      "tipo": "ClusterIP",
+      "portas": [
+        "80->8080"
+      ],
+      "endpoints": 0,
+      "sem_endpoint": true,
+      "fonte_endpoint": "EndpointSlice",
+      "selector": {
+        "app": "nyx-api"
+      },
+      "idade": "7h"
+    },
+    {
+      "nome": "nyx-postgres",
+      "tipo": "ClusterIP",
+      "portas": [
+        "5432"
+      ],
+      "endpoints": 1,
+      "sem_endpoint": false,
+      "fonte_endpoint": "EndpointSlice",
+      "selector": {
+        "app": "nyx-postgres"
+      },
+      "idade": "7h"
+    }
+  ]
+}
+
+### contraste — helio-prod, Service COM endpoint:
+[
+  {
+    "nome": "encontros-tech-web",
+    "endpoints": 2,
+    "sem_endpoint": false
+  },
+  {
+    "nome": "helio-postgres",
+    "endpoints": 1,
+    "sem_endpoint": false
+  }
+]
+
+NOTA: ok=true com sem_endpoint=true é DIFERENTE de ok=false (erro de leitura).
+      Ver critério 7 para a forma que o envelope assume quando a leitura falha.

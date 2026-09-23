@@ -1,0 +1,72 @@
+==============================================================
+CRITÉRIO 2 — lista namespaces, e selecionar um filtra os demais painéis
+==============================================================
+gerado em : 2026-09-22T16:35:47-03:00
+comando   : curl -s 'localhost:8700/api/snapshot?ns=<N>' para N em helio-prod e orion-stg
+--------------------------------------------------------------
+
+### namespaces listados
+{
+  "ok": true,
+  "recurso": "namespaces",
+  "itens": [
+    {
+      "nome": "default",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "helio-prod",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "kube-node-lease",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "kube-public",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "kube-system",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "local-path-storage",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "nyx-prod",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "nyx-stg",
+      "fase": "Active",
+      "idade": "7h"
+    },
+    {
+      "nome": "orion-stg",
+      "fase": "Active",
+      "idade": "7h"
+    }
+  ]
+}
+
+### ns=helio-prod -> pods e services devolvidos (repare que mudam com o namespace)
+  namespace no snapshot: helio-prod
+  pods    : ['encontros-tech-schema-gcclr', 'encontros-tech-web-64995bb454-4tmtq', 'encontros-tech-web-64995bb454-9wzl9', 'helio-postgres-b9886fd96-7wjpw']
+  services: ['encontros-tech-web', 'helio-postgres']
+  deploys : ['encontros-tech-web', 'helio-postgres']
+
+### ns=orion-stg -> pods e services devolvidos (repare que mudam com o namespace)
+  namespace no snapshot: orion-stg
+  pods    : ['orion-web-6788bb6d46-7hmm6', 'orion-web-6788bb6d46-hxlbl', 'orion-web-6788bb6d46-qk52g', 'orion-postgres-df9cd6bc-cq4r9']
+  services: ['orion-web', 'orion-postgres']
+  deploys : ['orion-web', 'orion-postgres']
+

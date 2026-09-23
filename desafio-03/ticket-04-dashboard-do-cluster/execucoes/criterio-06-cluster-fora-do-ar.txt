@@ -1,0 +1,83 @@
+==============================================================
+CRITÉRIO 6 — com o cluster fora do ar, a tela carrega e explica; não fica em branco
+==============================================================
+gerado em : 2026-09-22T16:35:49-03:00
+comando   : KUBECONFIG=ambiente/kubeconfig-cluster-morto.yaml python3 src/dashboard.py --porta 8701
+--------------------------------------------------------------
+
+### o kubeconfig fabricado aponta para um endereço que não responde:
+5:    server: https://127.0.0.1:59999
+
+### o servidor SOBE mesmo assim (stderr):
+contexto corrente : kind-metacortex-lab
+servidor          : https://127.0.0.1:59999
+kubeconfig        : /home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-04-dashboard-do-cluster/ambiente/kubeconfig-cluster-morto.yaml
+somente leitura   : verbos ['get', 'list', 'watch']
+servindo em       : http://127.0.0.1:8701/
+127.0.0.1 - "GET /healthz HTTP/1.1" 200 -
+
+### a página é servida normalmente — HTTP e tamanho:
+  GET /            -> HTTP 200, 2010 bytes
+  GET /api/contexto-> HTTP 200
+
+### /api/contexto responde MESMO sem cluster (o cabeçalho tem o que mostrar):
+{
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:59999",
+  "kubeconfig": "/home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-04-dashboard-do-cluster/ambiente/kubeconfig-cluster-morto.yaml",
+  "namespace_padrao": null,
+  "erro": null
+}
+
+### /api/snapshot: envelope de falha classificado, com o endereço tentado
+{
+  "lido_em": "2026-09-22T19:35:49+00:00",
+  "namespace": null,
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:59999",
+  "kubeconfig": "/home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-04-dashboard-do-cluster/ambiente/kubeconfig-cluster-morto.yaml",
+  "namespace_padrao": null,
+  "erro": null,
+  "namespaces": {
+    "ok": false,
+    "recurso": "namespaces",
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError)."
+  },
+  "deployments": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "deployments"
+  },
+  "pods": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "pods"
+  },
+  "services": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "services"
+  },
+  "eventos": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "eventos"
+  }
+}
+
+### não há stack trace no que é servido ao navegador:
+  OK: nenhum 'Traceback' na resposta servida
+
+### a interface oferece nova tentativa (app.js):
+211:      `<button type="button" id="btn-retentar">tentar de novo</button>`;
+212:    faixa.querySelector("#btn-retentar").addEventListener("click", atualizar);

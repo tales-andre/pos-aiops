@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard do cluster</title>
+<link rel="stylesheet" href="/ui/estilo.css">
+</head>
+<body>
+
+<header id="cabecalho">
+  <div class="ctx">
+    <span class="rotulo">contexto</span>
+    <strong id="ctx-nome">carregando…</strong>
+  </div>
+  <div class="ctx">
+    <span class="rotulo">servidor</span>
+    <code id="ctx-servidor">—</code>
+  </div>
+  <div class="ctx somente-leitura" title="Esta aplicação só executa verbos de leitura (get, list, watch).">
+    somente leitura
+  </div>
+  <div class="ctx relogio">
+    <span id="relogio">—</span>
+    <button id="btn-atualizar" type="button">atualizar</button>
+  </div>
+</header>
+
+<div id="faixa-global" class="faixa oculto"></div>
+
+<div id="barra">
+  <label for="busca">busca por nome</label>
+  <input id="busca" type="search" placeholder="filtra deployments, pods e services" autocomplete="off">
+  <span id="ns-atual" class="pilula">—</span>
+</div>
+
+<main>
+  <section class="painel" id="painel-namespaces">
+    <h2>Namespaces <span class="contagem"></span></h2>
+    <div class="conteudo"></div>
+  </section>
+
+  <section class="painel" id="painel-deployments">
+    <h2>Deployments <span class="contagem"></span></h2>
+    <div class="conteudo"></div>
+  </section>
+
+  <section class="painel" id="painel-pods">
+    <h2>Pods <span class="contagem"></span></h2>
+    <div class="conteudo"></div>
+  </section>
+
+  <section class="painel" id="painel-services">
+    <h2>Services <span class="contagem"></span></h2>
+    <div class="conteudo"></div>
+  </section>
+
+  <section class="painel largo" id="painel-eventos">
+    <h2>Eventos <span class="contagem"></span></h2>
+    <div class="conteudo"></div>
+  </section>
+</main>
+
+<footer>
+  atualização automática a cada <span id="intervalo">15</span>s ·
+  somente leitura, nenhum verbo de escrita existe neste projeto
+</footer>
+
+<script src="/ui/app.js"></script>
+</body>
+</html>

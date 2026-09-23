@@ -1,0 +1,206 @@
+{
+  "lido_em": "2026-09-22T19:35:48+00:00",
+  "namespace": "orion-stg",
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:40723",
+  "kubeconfig": "/home/tales/.kube/metacortex-lab.yaml",
+  "namespace_padrao": null,
+  "erro": null,
+  "namespaces": {
+    "ok": true,
+    "recurso": "namespaces",
+    "itens": [
+      {
+        "nome": "default",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "helio-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-node-lease",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-public",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-system",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "local-path-storage",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-stg",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "orion-stg",
+        "fase": "Active",
+        "idade": "7h"
+      }
+    ]
+  },
+  "deployments": {
+    "ok": true,
+    "recurso": "deployments",
+    "itens": [
+      {
+        "nome": "orion-web",
+        "prontos": 0,
+        "desejados": 3,
+        "texto": "0/3",
+        "saudavel": false,
+        "disponiveis": 0,
+        "atualizados": 3,
+        "idade": "7h",
+        "imagens": [
+          "fabricioveronez/fake-shop:v1.14.2"
+        ]
+      },
+      {
+        "nome": "orion-postgres",
+        "prontos": 1,
+        "desejados": 1,
+        "texto": "1/1",
+        "saudavel": true,
+        "disponiveis": 1,
+        "atualizados": 1,
+        "idade": "7h",
+        "imagens": [
+          "postgres:16-alpine"
+        ]
+      }
+    ]
+  },
+  "pods": {
+    "ok": true,
+    "recurso": "pods",
+    "itens": [
+      {
+        "nome": "orion-web-6788bb6d46-7hmm6",
+        "estado": "ImagePullBackOff",
+        "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "reinicios": 0,
+        "prontos": "0/1",
+        "fase_api": "Pending",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": true
+      },
+      {
+        "nome": "orion-web-6788bb6d46-hxlbl",
+        "estado": "ImagePullBackOff",
+        "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "reinicios": 0,
+        "prontos": "0/1",
+        "fase_api": "Pending",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": true
+      },
+      {
+        "nome": "orion-web-6788bb6d46-qk52g",
+        "estado": "ImagePullBackOff",
+        "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "reinicios": 0,
+        "prontos": "0/1",
+        "fase_api": "Pending",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": true
+      },
+      {
+        "nome": "orion-postgres-df9cd6bc-cq4r9",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      }
+    ]
+  },
+  "services": {
+    "ok": true,
+    "recurso": "services",
+    "itens": [
+      {
+        "nome": "orion-web",
+        "tipo": "ClusterIP",
+        "portas": [
+          "80->5000"
+        ],
+        "endpoints": 0,
+        "sem_endpoint": true,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app": "orion-web"
+        },
+        "idade": "7h"
+      },
+      {
+        "nome": "orion-postgres",
+        "tipo": "ClusterIP",
+        "portas": [
+          "5432"
+        ],
+        "endpoints": 1,
+        "sem_endpoint": false,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app": "orion-postgres"
+        },
+        "idade": "7h"
+      }
+    ]
+  },
+  "eventos": {
+    "ok": true,
+    "recurso": "events",
+    "itens": [
+      {
+        "tipo": "Normal",
+        "motivo": "BackOff",
+        "objeto": "Pod/orion-web-6788bb6d46-hxlbl",
+        "mensagem": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "idade": "45s",
+        "contagem": 307
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "BackOff",
+        "objeto": "Pod/orion-web-6788bb6d46-qk52g",
+        "mensagem": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "idade": "50s",
+        "contagem": 307
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "BackOff",
+        "objeto": "Pod/orion-web-6788bb6d46-7hmm6",
+        "mensagem": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+        "idade": "51s",
+        "contagem": 305
+      }
+    ]
+  }
+}

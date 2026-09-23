@@ -1,0 +1,42 @@
+==============================================================
+CRITÉRIO 8 — busca por nome e filtro por namespace funcionam sobre os painéis
+==============================================================
+gerado em : 2026-09-22T16:35:48-03:00
+comando   : curl -s 'localhost:8700/api/snapshot?ns=<N>' + filtro de busca aplicado no navegador (src/ui/app.js)
+--------------------------------------------------------------
+
+### filtro por namespace: o parâmetro ns muda o conjunto devolvido
+  ns=helio-prod   deployments=2  pods=4  services=2
+  ns=nyx-prod     deployments=2  pods=3  services=2
+  ns=nyx-stg      deployments=2  pods=3  services=2
+  ns=orion-stg    deployments=2  pods=4  services=2
+
+### busca por nome: aplicada no cliente sobre deployments, pods e services.
+### Simulação da mesma função de filtro de src/ui/app.js sobre o dado servido:
+  busca='postgres'       deployments  1 de 2 -> ['nyx-postgres']
+  busca='postgres'       pods         1 de 3 -> ['nyx-postgres-5c64c56fc4-5ckmm']
+  busca='postgres'       services     1 de 2 -> ['nyx-postgres']
+
+  busca='api'            deployments  1 de 2 -> ['nyx-api']
+  busca='api'            pods         2 de 3 -> ['nyx-api-6bb9d659c5-fzv86', 'nyx-api-6bb9d659c5-jcz42']
+  busca='api'            services     1 de 2 -> ['nyx-api']
+
+  busca='nyx'            deployments  2 de 2 -> ['nyx-api', 'nyx-postgres']
+  busca='nyx'            pods         3 de 3 -> ['nyx-api-6bb9d659c5-fzv86', 'nyx-api-6bb9d659c5-jcz42', 'nyx-postgres-5c64c56fc4-5ckmm']
+  busca='nyx'            services     2 de 2 -> ['nyx-api', 'nyx-postgres']
+
+  busca='inexistente-xyz' deployments  nenhum deployment casa com "inexistente-xyz" (mensagem distinta de vazio/erro)
+  busca='inexistente-xyz' pods         nenhum pod casa com "inexistente-xyz" (mensagem distinta de vazio/erro)
+  busca='inexistente-xyz' services     nenhum service casa com "inexistente-xyz" (mensagem distinta de vazio/erro)
+
+### o código que implementa (app.js):
+52:const SEM_BUSCA = (o, t) => avisoHTML("sem-busca", "⌕", `nenhum ${o} casa com "${t}"`, "há objetos no namespace, mas nenhum com esse nome.");
+72:  const termo = estado.busca.trim().toLowerCase();
+73:  const filtrados = termo && rotuloObjeto
+82:  if (filtrados.length === 0) {
+83:    conteudo.innerHTML = SEM_BUSCA(rotuloObjeto || "objeto", estado.busca.trim());
+88:    ? `(${filtrados.length} de ${todos.length})`
+89:    : `(${filtrados.length})`;
+90:  conteudo.innerHTML = desenhar(filtrados);
+266:  estado.busca = e.target.value;
+270:$("#busca").value = estado.busca;

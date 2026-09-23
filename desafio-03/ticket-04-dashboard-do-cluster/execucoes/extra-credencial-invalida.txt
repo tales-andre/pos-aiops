@@ -1,0 +1,21 @@
+==============================================================
+EXTRA (01-comportamento.md) — credencial inválida tem mensagem DISTINTA de cluster fora do ar
+==============================================================
+gerado em : 2026-09-22T16:35:51-03:00
+comando   : KUBECONFIG=ambiente/kubeconfig-credencial-invalida.yaml python3 src/dashboard.py --porta 8704
+--------------------------------------------------------------
+
+### o cluster RESPONDE (é o mesmo endereço do cenário saudável); o token é que não presta
+6:    server: https://127.0.0.1:40723
+11:    token: <token invalido fabricado>
+
+### o que o dashboard serve:
+  namespaces   credencial_invalida -> 'a credencial não foi aceita'
+  deployments  credencial_invalida -> 'a credencial não foi aceita'
+  pods         credencial_invalida -> 'a credencial não foi aceita'
+  services     credencial_invalida -> 'a credencial não foi aceita'
+  eventos      credencial_invalida -> 'a credencial não foi aceita'
+
+### as duas mensagens lado a lado — a ação de quem lê é diferente em cada uma:
+  cluster fora do ar  : cluster_inalcancavel | o cluster não respondeu | não foi possível estabelecer conexão com o apiserver (MaxRetryError).
+  credencial inválida : credencial_invalida | a credencial não foi aceita | a credencial do kubeconfig foi recusada pelo apiserver (Unauthorized). Renove o login e reinicie.

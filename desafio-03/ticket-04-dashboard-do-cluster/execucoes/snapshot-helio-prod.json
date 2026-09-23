@@ -1,0 +1,401 @@
+{
+  "lido_em": "2026-09-22T19:35:48+00:00",
+  "namespace": "helio-prod",
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:40723",
+  "kubeconfig": "/home/tales/.kube/metacortex-lab.yaml",
+  "namespace_padrao": null,
+  "erro": null,
+  "namespaces": {
+    "ok": true,
+    "recurso": "namespaces",
+    "itens": [
+      {
+        "nome": "default",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "helio-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-node-lease",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-public",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-system",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "local-path-storage",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-stg",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "orion-stg",
+        "fase": "Active",
+        "idade": "7h"
+      }
+    ]
+  },
+  "deployments": {
+    "ok": true,
+    "recurso": "deployments",
+    "itens": [
+      {
+        "nome": "encontros-tech-web",
+        "prontos": 2,
+        "desejados": 2,
+        "texto": "2/2",
+        "saudavel": true,
+        "disponiveis": 2,
+        "atualizados": 2,
+        "idade": "7h",
+        "imagens": [
+          "fabricioveronez/encontros-tech:v26"
+        ]
+      },
+      {
+        "nome": "helio-postgres",
+        "prontos": 1,
+        "desejados": 1,
+        "texto": "1/1",
+        "saudavel": true,
+        "disponiveis": 1,
+        "atualizados": 1,
+        "idade": "7h",
+        "imagens": [
+          "postgres:16-alpine"
+        ]
+      }
+    ]
+  },
+  "pods": {
+    "ok": true,
+    "recurso": "pods",
+    "itens": [
+      {
+        "nome": "encontros-tech-schema-gcclr",
+        "estado": "Completed",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "0/1",
+        "fase_api": "Succeeded",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      },
+      {
+        "nome": "encontros-tech-web-64995bb454-4tmtq",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      },
+      {
+        "nome": "encontros-tech-web-64995bb454-9wzl9",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      },
+      {
+        "nome": "helio-postgres-b9886fd96-7wjpw",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      }
+    ]
+  },
+  "services": {
+    "ok": true,
+    "recurso": "services",
+    "itens": [
+      {
+        "nome": "encontros-tech-web",
+        "tipo": "ClusterIP",
+        "portas": [
+          "80->http"
+        ],
+        "endpoints": 2,
+        "sem_endpoint": false,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app.kubernetes.io/instance": "helio-prod",
+          "app.kubernetes.io/managed-by": "platform",
+          "app.kubernetes.io/name": "encontros-tech-web",
+          "app.kubernetes.io/part-of": "encontros-tech"
+        },
+        "idade": "7h"
+      },
+      {
+        "nome": "helio-postgres",
+        "tipo": "ClusterIP",
+        "portas": [
+          "5432"
+        ],
+        "endpoints": 1,
+        "sem_endpoint": false,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app": "helio-postgres"
+        },
+        "idade": "7h"
+      }
+    ]
+  },
+  "eventos": {
+    "ok": true,
+    "recurso": "events",
+    "itens": [
+      {
+        "tipo": "Warning",
+        "motivo": "Unhealthy",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Readiness probe failed: Get \"http://10.244.0.20:8000/metrics\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+        "idade": "34m",
+        "contagem": 2
+      },
+      {
+        "tipo": "Warning",
+        "motivo": "Unhealthy",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Liveness probe failed: Get \"http://10.244.0.20:8000/metrics\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+        "idade": "34m",
+        "contagem": 1
+      },
+      {
+        "tipo": "Warning",
+        "motivo": "Unhealthy",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Readiness probe failed: Get \"http://10.244.0.21:8000/metrics\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+        "idade": "34m",
+        "contagem": 2
+      },
+      {
+        "tipo": "Warning",
+        "motivo": "Unhealthy",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Liveness probe failed: Get \"http://10.244.0.21:8000/metrics\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+        "idade": "34m",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Completed",
+        "objeto": "Job/encontros-tech-schema",
+        "mensagem": "Job completed",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Started",
+        "objeto": "Pod/encontros-tech-schema-gcclr",
+        "mensagem": "Started container schema",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Scheduled",
+        "objeto": "Pod/encontros-tech-schema-gcclr",
+        "mensagem": "Successfully assigned helio-prod/encontros-tech-schema-gcclr to metacortex-lab-control-plane",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Pulled",
+        "objeto": "Pod/encontros-tech-schema-gcclr",
+        "mensagem": "Container image \"fabricioveronez/encontros-tech:v26\" already present on machine",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Created",
+        "objeto": "Pod/encontros-tech-schema-gcclr",
+        "mensagem": "Created container schema",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "SuccessfulCreate",
+        "objeto": "Job/encontros-tech-schema",
+        "mensagem": "Created pod: encontros-tech-schema-gcclr",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Scheduled",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Successfully assigned helio-prod/encontros-tech-web-64995bb454-4tmtq to metacortex-lab-control-plane",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Pulled",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Container image \"fabricioveronez/encontros-tech:v26\" already present on machine",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Created",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Created container web",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Started",
+        "objeto": "Pod/encontros-tech-web-64995bb454-4tmtq",
+        "mensagem": "Started container web",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Scheduled",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Successfully assigned helio-prod/encontros-tech-web-64995bb454-9wzl9 to metacortex-lab-control-plane",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Pulled",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Container image \"fabricioveronez/encontros-tech:v26\" already present on machine",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Created",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Created container web",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Started",
+        "objeto": "Pod/encontros-tech-web-64995bb454-9wzl9",
+        "mensagem": "Started container web",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "SuccessfulCreate",
+        "objeto": "ReplicaSet/encontros-tech-web-64995bb454",
+        "mensagem": "Created pod: encontros-tech-web-64995bb454-4tmtq",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "SuccessfulCreate",
+        "objeto": "ReplicaSet/encontros-tech-web-64995bb454",
+        "mensagem": "Created pod: encontros-tech-web-64995bb454-9wzl9",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "ScalingReplicaSet",
+        "objeto": "Deployment/encontros-tech-web",
+        "mensagem": "Scaled up replica set encontros-tech-web-64995bb454 to 2",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Pulled",
+        "objeto": "Pod/helio-postgres-b9886fd96-7wjpw",
+        "mensagem": "Container image \"postgres:16-alpine\" already present on machine",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Created",
+        "objeto": "Pod/helio-postgres-b9886fd96-7wjpw",
+        "mensagem": "Created container postgres",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Started",
+        "objeto": "Pod/helio-postgres-b9886fd96-7wjpw",
+        "mensagem": "Started container postgres",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Scheduled",
+        "objeto": "Pod/helio-postgres-b9886fd96-7wjpw",
+        "mensagem": "Successfully assigned helio-prod/helio-postgres-b9886fd96-7wjpw to metacortex-lab-control-plane",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "SuccessfulCreate",
+        "objeto": "ReplicaSet/helio-postgres-b9886fd96",
+        "mensagem": "Created pod: helio-postgres-b9886fd96-7wjpw",
+        "idade": "7h",
+        "contagem": 1
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "ScalingReplicaSet",
+        "objeto": "Deployment/helio-postgres",
+        "mensagem": "Scaled up replica set helio-postgres-b9886fd96 to 1",
+        "idade": "7h",
+        "contagem": 1
+      }
+    ]
+  }
+}

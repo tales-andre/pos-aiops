@@ -1,0 +1,170 @@
+{
+  "lido_em": "2026-09-22T19:35:48+00:00",
+  "namespace": "nyx-stg",
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:40723",
+  "kubeconfig": "/home/tales/.kube/metacortex-lab.yaml",
+  "namespace_padrao": null,
+  "erro": null,
+  "namespaces": {
+    "ok": true,
+    "recurso": "namespaces",
+    "itens": [
+      {
+        "nome": "default",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "helio-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-node-lease",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-public",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-system",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "local-path-storage",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-stg",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "orion-stg",
+        "fase": "Active",
+        "idade": "7h"
+      }
+    ]
+  },
+  "deployments": {
+    "ok": true,
+    "recurso": "deployments",
+    "itens": [
+      {
+        "nome": "nyx-api",
+        "prontos": 2,
+        "desejados": 2,
+        "texto": "2/2",
+        "saudavel": true,
+        "disponiveis": 2,
+        "atualizados": 2,
+        "idade": "7h",
+        "imagens": [
+          "fabricioveronez/kube-news:v1.0.0"
+        ]
+      },
+      {
+        "nome": "nyx-postgres",
+        "prontos": 1,
+        "desejados": 1,
+        "texto": "1/1",
+        "saudavel": true,
+        "disponiveis": 1,
+        "atualizados": 1,
+        "idade": "7h",
+        "imagens": [
+          "postgres:16-alpine"
+        ]
+      }
+    ]
+  },
+  "pods": {
+    "ok": true,
+    "recurso": "pods",
+    "itens": [
+      {
+        "nome": "nyx-api-69695bc4d6-4927k",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      },
+      {
+        "nome": "nyx-api-69695bc4d6-j882k",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      },
+      {
+        "nome": "nyx-postgres-5c64c56fc4-dp6zk",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      }
+    ]
+  },
+  "services": {
+    "ok": true,
+    "recurso": "services",
+    "itens": [
+      {
+        "nome": "nyx-api",
+        "tipo": "ClusterIP",
+        "portas": [
+          "80->8080"
+        ],
+        "endpoints": 0,
+        "sem_endpoint": true,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app": "nyx-api"
+        },
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-postgres",
+        "tipo": "ClusterIP",
+        "portas": [
+          "5432"
+        ],
+        "endpoints": 1,
+        "sem_endpoint": false,
+        "fonte_endpoint": "EndpointSlice",
+        "selector": {
+          "app": "nyx-postgres"
+        },
+        "idade": "7h"
+      }
+    ]
+  },
+  "eventos": {
+    "ok": true,
+    "recurso": "events",
+    "itens": []
+  }
+}

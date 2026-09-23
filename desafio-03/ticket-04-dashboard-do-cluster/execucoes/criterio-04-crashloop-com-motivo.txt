@@ -1,0 +1,81 @@
+==============================================================
+CRITÉRIO 4 — pod em CrashLoopBackOff aparece com o motivo, não como Running
+==============================================================
+gerado em : 2026-09-22T16:35:47-03:00
+comando   : curl -s 'localhost:8700/api/snapshot?ns=nyx-prod' | .pods
+--------------------------------------------------------------
+
+### a armadilha: a API reporta phase=Running para um pod em CrashLoopBackOff
+NOME                            PHASE     WAITING            LAST
+nyx-api-6bb9d659c5-fzv86        Running   CrashLoopBackOff   OOMKilled
+nyx-api-6bb9d659c5-jcz42        Running   CrashLoopBackOff   OOMKilled
+nyx-postgres-5c64c56fc4-5ckmm   Running   <none>             <none>
+
+### o que o dashboard serve (estado vem do container, motivo do lastState):
+{
+  "ok": true,
+  "recurso": "pods",
+  "itens": [
+    {
+      "nome": "nyx-api-6bb9d659c5-fzv86",
+      "estado": "CrashLoopBackOff",
+      "motivo": "OOMKilled / exit 137",
+      "reinicios": 20,
+      "prontos": "0/1",
+      "fase_api": "Running",
+      "no": "metacortex-lab-control-plane",
+      "idade": "7h",
+      "em_falha": true
+    },
+    {
+      "nome": "nyx-api-6bb9d659c5-jcz42",
+      "estado": "CrashLoopBackOff",
+      "motivo": "OOMKilled / exit 137",
+      "reinicios": 17,
+      "prontos": "0/1",
+      "fase_api": "Running",
+      "no": "metacortex-lab-control-plane",
+      "idade": "7h",
+      "em_falha": true
+    },
+    {
+      "nome": "nyx-postgres-5c64c56fc4-5ckmm",
+      "estado": "Running",
+      "motivo": null,
+      "reinicios": 0,
+      "prontos": "1/1",
+      "fase_api": "Running",
+      "no": "metacortex-lab-control-plane",
+      "idade": "7h",
+      "em_falha": false
+    }
+  ]
+}
+
+### ImagePullBackOff em orion-stg, mesmo tratamento:
+[
+  {
+    "nome": "orion-web-6788bb6d46-7hmm6",
+    "estado": "ImagePullBackOff",
+    "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+    "fase_api": "Pending"
+  },
+  {
+    "nome": "orion-web-6788bb6d46-hxlbl",
+    "estado": "ImagePullBackOff",
+    "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+    "fase_api": "Pending"
+  },
+  {
+    "nome": "orion-web-6788bb6d46-qk52g",
+    "estado": "ImagePullBackOff",
+    "motivo": "Back-off pulling image \"fabricioveronez/fake-shop:v1.14.2\"",
+    "fase_api": "Pending"
+  },
+  {
+    "nome": "orion-postgres-df9cd6bc-cq4r9",
+    "estado": "Running",
+    "motivo": null,
+    "fase_api": "Running"
+  }
+]

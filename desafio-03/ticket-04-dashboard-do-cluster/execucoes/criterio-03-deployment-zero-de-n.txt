@@ -1,0 +1,69 @@
+==============================================================
+CRITÉRIO 3 — Deployment sem réplica pronta aparece como 0/N, não em branco
+==============================================================
+gerado em : 2026-09-22T16:35:47-03:00
+comando   : curl -s 'localhost:8700/api/snapshot?ns=nyx-prod' | .deployments
+--------------------------------------------------------------
+
+### a API OMITE readyReplicas quando é zero — prova direta:
+{
+  "conditions": [
+    {
+      "lastTransitionTime": "2026-09-22T12:01:44Z",
+      "lastUpdateTime": "2026-09-22T12:01:44Z",
+      "message": "Deployment does not have minimum availability.",
+      "reason": "MinimumReplicasUnavailable",
+      "status": "False",
+      "type": "Available"
+    },
+    {
+      "lastTransitionTime": "2026-09-22T12:18:09Z",
+      "lastUpdateTime": "2026-09-22T12:18:09Z",
+      "message": "ReplicaSet \"nyx-api-6bb9d659c5\" has timed out progressing.",
+      "reason": "ProgressDeadlineExceeded",
+      "status": "False",
+      "type": "Progressing"
+    }
+  ],
+  "observedGeneration": 2,
+  "replicas": 2,
+  "unavailableReplicas": 2,
+  "updatedReplicas": 2
+}
+
+### o campo readyReplicas existe? (vazio = ausente, não zero)
+  valor bruto: ''
+
+### o que o dashboard serve:
+{
+  "ok": true,
+  "recurso": "deployments",
+  "itens": [
+    {
+      "nome": "nyx-api",
+      "prontos": 0,
+      "desejados": 2,
+      "texto": "0/2",
+      "saudavel": false,
+      "disponiveis": 0,
+      "atualizados": 2,
+      "idade": "7h",
+      "imagens": [
+        "fabricioveronez/kube-news:v1.0.0"
+      ]
+    },
+    {
+      "nome": "nyx-postgres",
+      "prontos": 1,
+      "desejados": 1,
+      "texto": "1/1",
+      "saudavel": true,
+      "disponiveis": 1,
+      "atualizados": 1,
+      "idade": "7h",
+      "imagens": [
+        "postgres:16-alpine"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "lido_em": "2026-09-22T19:35:49+00:00",
+  "namespace": null,
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:59999",
+  "kubeconfig": "/home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-04-dashboard-do-cluster/ambiente/kubeconfig-cluster-morto.yaml",
+  "namespace_padrao": null,
+  "erro": null,
+  "namespaces": {
+    "ok": false,
+    "recurso": "namespaces",
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError)."
+  },
+  "deployments": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "deployments"
+  },
+  "pods": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "pods"
+  },
+  "services": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "services"
+  },
+  "eventos": {
+    "ok": false,
+    "categoria": "cluster_inalcancavel",
+    "titulo": "o cluster não respondeu",
+    "mensagem": "não foi possível estabelecer conexão com o apiserver (MaxRetryError).",
+    "recurso": "eventos"
+  }
+}

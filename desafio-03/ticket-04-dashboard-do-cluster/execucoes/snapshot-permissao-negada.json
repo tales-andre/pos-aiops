@@ -1,0 +1,168 @@
+{
+  "lido_em": "2026-09-22T19:35:50+00:00",
+  "namespace": "nyx-prod",
+  "contexto": "metacortex-lab-leitura-restrita",
+  "servidor": "https://127.0.0.1:40723",
+  "kubeconfig": "/home/tales/pos-aiops/pos-aiops-work/desafio-03/ticket-04-dashboard-do-cluster/ambiente/kubeconfig-leitura-restrita.yaml",
+  "namespace_padrao": "nyx-prod",
+  "erro": null,
+  "namespaces": {
+    "ok": true,
+    "recurso": "namespaces",
+    "itens": [
+      {
+        "nome": "default",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "helio-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-node-lease",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-public",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "kube-system",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "local-path-storage",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-prod",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "nyx-stg",
+        "fase": "Active",
+        "idade": "7h"
+      },
+      {
+        "nome": "orion-stg",
+        "fase": "Active",
+        "idade": "7h"
+      }
+    ]
+  },
+  "deployments": {
+    "ok": true,
+    "recurso": "deployments",
+    "itens": [
+      {
+        "nome": "nyx-api",
+        "prontos": 0,
+        "desejados": 2,
+        "texto": "0/2",
+        "saudavel": false,
+        "disponiveis": 0,
+        "atualizados": 2,
+        "idade": "7h",
+        "imagens": [
+          "fabricioveronez/kube-news:v1.0.0"
+        ]
+      },
+      {
+        "nome": "nyx-postgres",
+        "prontos": 1,
+        "desejados": 1,
+        "texto": "1/1",
+        "saudavel": true,
+        "disponiveis": 1,
+        "atualizados": 1,
+        "idade": "7h",
+        "imagens": [
+          "postgres:16-alpine"
+        ]
+      }
+    ]
+  },
+  "pods": {
+    "ok": true,
+    "recurso": "pods",
+    "itens": [
+      {
+        "nome": "nyx-api-6bb9d659c5-fzv86",
+        "estado": "CrashLoopBackOff",
+        "motivo": "OOMKilled / exit 137",
+        "reinicios": 20,
+        "prontos": "0/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": true
+      },
+      {
+        "nome": "nyx-api-6bb9d659c5-jcz42",
+        "estado": "CrashLoopBackOff",
+        "motivo": "OOMKilled / exit 137",
+        "reinicios": 17,
+        "prontos": "0/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": true
+      },
+      {
+        "nome": "nyx-postgres-5c64c56fc4-5ckmm",
+        "estado": "Running",
+        "motivo": null,
+        "reinicios": 0,
+        "prontos": "1/1",
+        "fase_api": "Running",
+        "no": "metacortex-lab-control-plane",
+        "idade": "7h",
+        "em_falha": false
+      }
+    ]
+  },
+  "services": {
+    "ok": false,
+    "recurso": "services",
+    "categoria": "permissao_negada",
+    "titulo": "sem permissão para ler services",
+    "mensagem": "o contexto corrente não tem permissão de leitura em services (Forbidden)."
+  },
+  "eventos": {
+    "ok": true,
+    "recurso": "events",
+    "itens": [
+      {
+        "tipo": "Warning",
+        "motivo": "BackOff",
+        "objeto": "Pod/nyx-api-6bb9d659c5-jcz42",
+        "mensagem": "Back-off restarting failed container api in pod nyx-api-6bb9d659c5-jcz42_nyx-prod(1f3a5f2d-2251-474b-ace0-d4d2d3f78773)",
+        "idade": "2m",
+        "contagem": 296
+      },
+      {
+        "tipo": "Warning",
+        "motivo": "BackOff",
+        "objeto": "Pod/nyx-api-6bb9d659c5-fzv86",
+        "mensagem": "Back-off restarting failed container api in pod nyx-api-6bb9d659c5-fzv86_nyx-prod(4b138a11-89e6-4453-b677-96dc88db3b71)",
+        "idade": "3m",
+        "contagem": 273
+      },
+      {
+        "tipo": "Normal",
+        "motivo": "Pulled",
+        "objeto": "Pod/nyx-api-6bb9d659c5-fzv86",
+        "mensagem": "Container image \"fabricioveronez/kube-news:v1.0.0\" already present on machine",
+        "idade": "33m",
+        "contagem": 14
+      }
+    ]
+  }
+}

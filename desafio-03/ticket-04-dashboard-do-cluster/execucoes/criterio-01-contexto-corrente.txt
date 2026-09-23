@@ -1,0 +1,40 @@
+==============================================================
+CRITÉRIO 1 — sobe contra o contexto corrente e mostra qual é, sem argumento de cluster
+==============================================================
+gerado em : 2026-09-22T16:35:47-03:00
+comando   : KUBECONFIG=~/.kube/metacortex-lab.yaml python3 src/dashboard.py --porta 8700 ; curl -s localhost:8700/api/contexto
+--------------------------------------------------------------
+
+### saída do processo ao subir (stderr) — note: nenhum argumento de cluster/contexto
+contexto corrente : kind-metacortex-lab
+servidor          : https://127.0.0.1:40723
+kubeconfig        : /home/tales/.kube/metacortex-lab.yaml
+somente leitura   : verbos ['get', 'list', 'watch']
+servindo em       : http://127.0.0.1:8700/
+127.0.0.1 - "GET /healthz HTTP/1.1" 200 -
+
+### confirmação independente: kubectl config current-context
+kind-metacortex-lab
+
+### GET /api/contexto
+{
+  "contexto": "kind-metacortex-lab",
+  "servidor": "https://127.0.0.1:40723",
+  "kubeconfig": "/home/tales/.kube/metacortex-lab.yaml",
+  "namespace_padrao": null,
+  "erro": null
+}
+
+### a única flag aceita é --porta
+usage: dashboard [-h] [--porta PORTA]
+
+Retrato somente-leitura do contexto corrente do kubeconfig.
+
+options:
+  -h, --help     show this help message and exit
+  --porta PORTA  porta de escuta (padrão: 8700)
+
+### o cabeçalho fixo da tela carrega contexto e servidor do /api/contexto:
+14:    <strong id="ctx-nome">carregando…</strong>
+18:    <code id="ctx-servidor">—</code>
+20:  <div class="ctx somente-leitura" title="Esta aplicação só executa verbos de leitura (get, list, watch).">
